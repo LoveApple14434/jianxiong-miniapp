@@ -1,0 +1,134 @@
+/* 社区页面 */
+
+.page-community {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* 话题导航 */
+.topic-nav {
+  background: var(--color-white);
+  border-bottom: 1rpx solid var(--color-border);
+  padding: 20rpx 0;
+  flex-shrink: 0;
+}
+
+.topic-nav-inner {
+  display: inline-flex;
+  gap: 16rpx;
+  padding: 0 32rpx;
+}
+
+.topic-tag {
+  padding: 10rpx 24rpx;
+  border-radius: 4rpx;
+  font-size: 24rpx;
+  color: var(--color-text-sub);
+  background: var(--color-bg);
+  white-space: nowrap;
+  border: 2rpx solid transparent;
+}
+
+.topic-tag-active {
+  background: var(--color-primary);
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* 帖子列表 */
+.post-scroll {
+  flex: 1;
+}
+
+.post-scroll .container {
+  padding-bottom: calc(200rpx + env(safe-area-inset-bottom));
+}
+
+.post-item {
+  padding: 28rpx;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.post-avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30rpx;
+  font-weight: 700;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.post-user-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.post-content {
+  line-height: 1.8;
+  margin-bottom: 20rpx;
+}
+
+/* 图片区 */
+.post-images {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.post-image-placeholder {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1rpx dashed var(--color-border);
+}
+
+/* 互动栏 */
+.post-actions {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 20rpx;
+  border-top: 1rpx solid var(--color-border);
+}
+
+.post-action {
+  font-size: 24rpx;
+  color: var(--color-text-sub);
+  padding: 8rpx 20rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 0;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 24rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: var(--color-text-sub);
+}

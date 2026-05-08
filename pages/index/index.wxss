@@ -1,0 +1,178 @@
+/* 首页样式 */
+
+.page-index {
+  padding-bottom: calc(200rpx + env(safe-area-inset-bottom));
+}
+
+/* Hero 轮播 */
+.hero-swiper {
+  width: 100%;
+  height: 480rpx;
+}
+
+.hero-item {
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-dark-bg);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.hero-content {
+  padding: 60rpx 48rpx;
+  text-align: center;
+}
+
+.hero-quote {
+  font-family: 'Noto Serif SC', 'Source Han Serif CN', serif;
+  font-size: 34rpx;
+  color: var(--color-white);
+  line-height: 2;
+  display: block;
+}
+
+.hero-author {
+  font-size: 24rpx;
+  color: var(--color-accent);
+  margin-top: 16rpx;
+  display: block;
+}
+
+/* 精选书摘横滑 */
+.book-scroll {
+  white-space: nowrap;
+  margin: 0 -32rpx;
+  padding: 0 32rpx;
+}
+
+.book-scroll-inner {
+  display: inline-flex;
+  gap: 24rpx;
+  padding-right: 32rpx;
+}
+
+.book-card {
+  display: inline-flex;
+  flex-direction: column;
+  width: 320rpx;
+  padding: 28rpx;
+  white-space: normal;
+  vertical-align: top;
+}
+
+.book-card-chapter {
+  font-size: 22rpx;
+  color: var(--color-accent);
+  font-weight: 600;
+  margin-bottom: 12rpx;
+}
+
+.book-card-text {
+  font-family: 'Noto Serif SC', 'Source Han Serif CN', serif;
+  font-size: 26rpx;
+  color: var(--color-text);
+  line-height: 1.8;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.book-card-meta {
+  margin-top: 20rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid var(--color-border);
+}
+
+/* 时间轴预览 */
+.timeline-preview {
+  padding: 36rpx 28rpx;
+}
+
+.timeline-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  padding: 0 12rpx;
+  margin-bottom: 32rpx;
+}
+
+.timeline-bar::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 12rpx;
+  right: 12rpx;
+  height: 4rpx;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+  border-radius: 2rpx;
+  transform: translateY(-50%);
+}
+
+.timeline-dot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.timeline-year {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 12rpx;
+}
+
+.dot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 4rpx solid var(--color-white);
+  box-shadow: 0 0 0 4rpx var(--color-accent-light);
+}
+
+.dot-first {
+  background: var(--color-primary);
+  box-shadow: 0 0 0 4rpx rgba(91, 45, 142, 0.2);
+}
+
+.timeline-label {
+  font-size: 20rpx;
+  color: var(--color-text-sub);
+  margin-top: 12rpx;
+}
+
+.timeline-link {
+  text-align: right;
+}
+
+/* 今日共读 */
+.today-reading-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.today-reading-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 24rpx;
+}
+
+.today-reading-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-sm {
+  padding: 12rpx 32rpx;
+  font-size: 24rpx;
+}

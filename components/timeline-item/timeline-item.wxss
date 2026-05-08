@@ -1,0 +1,199 @@
+/* ============================
+   三栏 flex 布局
+   ============================ */
+.tl-item {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 120rpx;
+}
+
+.tl-left-area,
+.tl-right-area {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.tl-center {
+  width: 60rpx;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  padding-top: 24rpx;
+  overflow: visible;
+}
+
+/* ============================
+   圆点
+   ============================ */
+.tl-dot-wrap {
+  position: relative;
+  z-index: 2;
+  overflow: visible;
+}
+
+.tl-dot {
+  width: 24rpx;
+  height: 24rpx;
+  border-radius: 50%;
+  background: #C9A96E;
+  border: 6rpx solid #E8D5B5;
+  box-shadow: 0 0 0 4rpx rgba(201, 169, 110, 0.3);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  z-index: 2;
+}
+
+.tl-dot-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  border: 3rpx solid #C9A96E;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.6s ease-out 0.2s, opacity 0.6s ease-out 0.2s;
+}
+
+/* ============================
+   枝节 — 从圆点向外延伸到卡片
+   作为圆点的子元素，不可能脱钩
+   ============================ */
+.tl-branch {
+  position: absolute;
+  top: 50%;
+  height: 4rpx;
+  background: #C9A96E;
+  border-radius: 2rpx;
+  transform: translateY(-50%);
+  z-index: 1;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s;
+}
+
+/* 左侧卡片：枝节从圆点向左伸出（距离更长以确保够到卡片） */
+.tl-left .tl-branch {
+  right: 50%;
+  width: 235rpx;
+  transform-origin: right center;
+  transform: translateY(-50%) scaleX(1);
+}
+
+/* 右侧卡片：枝节从圆点向右伸出 */
+.tl-right .tl-branch {
+  left: 50%;
+  width: 55rpx;
+  transform-origin: left center;
+  transform: translateY(-50%) scaleX(1);
+}
+
+/* ============================
+   卡片
+   ============================ */
+.tl-left .tl-card {
+  transform-origin: right center;
+}
+
+.tl-right .tl-card {
+  transform-origin: left center;
+}
+
+.tl-card {
+  padding: 24rpx;
+  position: relative;
+  transition: opacity 0.6s ease-out 0.55s, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.55s;
+}
+
+/* ============================
+   初始隐藏状态
+   ============================ */
+.tl-hidden .tl-dot {
+  transform: scale(0);
+}
+
+.tl-hidden .tl-dot-ring {
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+}
+
+.tl-hidden .tl-branch {
+  transform: translateY(-50%) scaleX(0) !important;
+}
+
+.tl-hidden .tl-card {
+  opacity: 0;
+  transform: scale(0.3);
+}
+
+/* ============================
+   显现状态
+   1. 圆点弹出 (0s)
+   2. 光环脉冲 (0.2s)
+   3. 枝节延伸 (0.3s)
+   4. 卡片展开 (0.55s)
+   ============================ */
+.tl-visible .tl-dot {
+  transform: scale(1);
+}
+
+.tl-visible .tl-dot-ring {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 0.6;
+  animation: ring-fade 1.2s ease-out 0.2s forwards;
+}
+
+.tl-visible .tl-left .tl-branch {
+  transform: translateY(-50%) scaleX(1);
+}
+
+.tl-visible .tl-right .tl-branch {
+  transform: translateY(-50%) scaleX(1);
+}
+
+.tl-visible .tl-card {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@keyframes ring-fade {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+/* ============================
+   文字样式
+   ============================ */
+.tl-year-badge {
+  display: inline-flex;
+  background: #5B2D8E;
+  color: #C9A96E;
+  font-size: 22rpx;
+  font-weight: 700;
+  padding: 4rpx 16rpx;
+  border-radius: 4rpx;
+  margin-bottom: 12rpx;
+  letter-spacing: 2rpx;
+}
+
+.tl-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #2D2D2D;
+  margin-bottom: 12rpx;
+}
+
+.tl-content {
+  display: block;
+  font-size: 26rpx;
+  color: #2D2D2D;
+  line-height: 1.8;
+}

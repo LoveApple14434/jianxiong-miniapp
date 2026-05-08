@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "timeline-item": "/components/timeline-item/timeline-item"
+  },
+  "navigationBarTitleText": "大先生足迹"
+}
