@@ -4,10 +4,10 @@
   <!-- 个人信息头部 -->
   <view class="profile-header">
     <view class="profile-avatar">
-      <text class="avatar-text">健</text>
+      <text class="avatar-text">{{avatarText}}</text>
     </view>
-    <text class="profile-name">健雄学子</text>
-    <text class="profile-desc">共读 12 天</text>
+    <text class="profile-name">{{displayName}}</text>
+    <text class="profile-desc">{{displayPhone}}</text>
   </view>
 
   <!-- 数据看板 -->
@@ -39,6 +39,9 @@
         <text class="menu-arrow">→</text>
       </view>
     </view>
+
+    <!-- 登出按钮 -->
+    <button class="logout-btn" bindtap="onLogout">登 出</button>
   </view>
 
 </view>

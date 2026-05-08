@@ -1,0 +1,206 @@
+/* 登录页面样式 */
+
+.page-login {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f5f0 0%, #f0e8e0 100%);
+  padding: 40rpx 30rpx;
+}
+
+/* 顶部品牌信息 */
+.login-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 60rpx;
+  margin-bottom: 80rpx;
+}
+
+.brand-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.brand-title {
+  font-size: 42rpx;
+  font-weight: bold;
+  color: #5b2d8e;
+  margin-bottom: 10rpx;
+}
+
+.brand-desc {
+  font-size: 26rpx;
+  color: #8c8c8c;
+  text-align: center;
+}
+
+/* 登录表单 */
+.login-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 授权状态 */
+.auth-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f9ff;
+  border: 2rpx solid #b3e5fc;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.status-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+  color: #00bcd4;
+}
+
+.status-text {
+  font-size: 24rpx;
+  color: #0097a7;
+}
+
+/* 表单组 */
+.form-group {
+  margin-bottom: 20rpx;
+}
+
+/* 授权按钮 */
+.btn-auth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  border: none;
+  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.btn-auth:active {
+  opacity: 0.9;
+  transform: scale(0.98);
+}
+
+.btn-icon {
+  margin-right: 12rpx;
+  font-size: 24rpx;
+}
+
+/* 按钮组 */
+.form-buttons {
+  margin-top: 40rpx;
+  margin-bottom: 30rpx;
+}
+
+.btn {
+  height: 60rpx;
+  border-radius: 12rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #5b2d8e 0%, #7d4ba8 100%);
+  color: white;
+}
+
+.btn-primary:active {
+  opacity: 0.9;
+  transform: scale(0.98);
+}
+
+.btn-primary[disabled] {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* 用户信息显示 */
+.user-info-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30rpx;
+  padding: 20rpx;
+  background: white;
+  border-radius: 12rpx;
+  border: 2rpx solid #e8e0d8;
+}
+
+.user-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 16rpx;
+  border: 4rpx solid #5b2d8e;
+}
+
+.user-avatar image {
+  width: 100%;
+  height: 100%;
+}
+
+.user-name {
+  font-size: 28rpx;
+  color: #2d2d2d;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.user-gender {
+  font-size: 20rpx;
+  color: #8c8c8c;
+}
+
+/* 登录说明 */
+.login-info {
+  display: flex;
+  flex-direction: column;
+  background: #fef3e2;
+  border: 2rpx solid #ffe0b2;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.info-title {
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #e65100;
+  margin-bottom: 12rpx;
+}
+
+.info-text {
+  font-size: 20rpx;
+  color: #bf360c;
+  line-height: 1.6;
+  margin-bottom: 8rpx;
+}
+
+.info-text:last-child {
+  margin-bottom: 0;
+}
+
+/* 底部文本 */
+.login-footer {
+  text-align: center;
+  margin-top: 40rpx;
+  padding-top: 30rpx;
+  border-top: 1rpx solid #e8e0d8;
+}
+
+.footer-text {
+  font-size: 20rpx;
+  color: #999;
+}

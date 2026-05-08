@@ -31,6 +31,16 @@ Page({
   },
 
   onShow() {
+    // 检查登录状态
+    const app = getApp()
+    if (!app.isUserLogin()) {
+      wx.reLaunch({
+        url: '/pages/login/login'
+      })
+      return
+    }
+
+    // 更新Tab栏
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 0 })
     }
