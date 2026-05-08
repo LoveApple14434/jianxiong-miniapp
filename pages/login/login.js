@@ -121,19 +121,38 @@ Page({
         },
         success(res) {
           try {
-            const response = JSON.parse(res.data)
+            // 处理响应数据：移除BOM字符和多余空格
+            const dataString = typeof res.data === 'string' 
+              ? res.data.trim().replace(/^\uFEFF/, '') 
+              : JSON.stringify(res.data)
+            
+            const response = JSON.parse(dataString)
+
+            console.log('[login] upload response:', { statusCode: res.statusCode, response })
 
             if (res.statusCode >= 200 && res.statusCode < 300 && response.code === 0) {
+              if (!response.data || !response.data.permanentUrl) {
+                reject(new Error('响应中缺少头像URL'))
+                return
+              }
               resolve(response.data.permanentUrl)
               return
             }
 
             reject(new Error(response.message || '头像上传失败'))
           } catch (error) {
-            reject(new Error('头像上传响应解析失败'))
+            console.error('[login] avatar upload parse error:', { 
+              error: error.message, 
+              statusCode: res.statusCode,
+              responseData: res.data 
+            })
+            reject(new Error('头像上传响应解析失败: ' + (error.message || '无效的JSON格式')))
           }
         },
-        fail: reject
+        fail(res) {
+          console.error('[login] avatar upload failed:', res)
+          reject(new Error(`头像上传失败 (${res.statusCode}): ${res.data || res.errMsg}`))
+        }
       })
     })
   },

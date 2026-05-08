@@ -5,7 +5,17 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "node app.js"
+    "dev": "node app.js",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:dev": "pm2 start ecosystem.config.js --env development",
+    "pm2:stop": "pm2 stop all",
+    "pm2:restart": "pm2 restart all",
+    "pm2:reload": "pm2 reload all",
+    "pm2:kill": "pm2 kill",
+    "pm2:log": "pm2 log",
+    "pm2:status": "pm2 status",
+    "pm2:save": "pm2 save",
+    "pm2:startup": "pm2 startup"
   },
   "dependencies": {
     "busboy": "^1.0.0",

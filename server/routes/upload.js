@@ -13,7 +13,10 @@ const uploadAvatar = async (req, res) => {
     const avatarFile = upload.files.avatar
 
     if (!avatarFile) {
-      return res.status(400).json({ code: 400, message: '缺少头像文件' })
+      return res.status(400).json({ 
+        code: 400, 
+        message: '缺少头像文件' 
+      })
     }
 
     const filename = await saveUploadedFile(avatarFile.data, avatarFile.filename)
@@ -22,7 +25,9 @@ const uploadAvatar = async (req, res) => {
 
     console.log('[upload] avatar saved:', { filename, url: permanentUrl })
 
-    return res.json({
+    // 确保响应是有效的JSON格式
+    res.set('Content-Type', 'application/json; charset=utf-8')
+    return res.status(200).json({
       code: 0,
       message: '头像上传成功',
       data: {
@@ -32,7 +37,11 @@ const uploadAvatar = async (req, res) => {
     })
   } catch (error) {
     console.error('[upload] error:', error)
-    return res.status(500).json({ code: 500, message: error.message || '头像上传失败' })
+    res.set('Content-Type', 'application/json; charset=utf-8')
+    return res.status(500).json({ 
+      code: 500, 
+      message: error.message || '头像上传失败' 
+    })
   }
 }
 
