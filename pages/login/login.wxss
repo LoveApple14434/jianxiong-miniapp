@@ -165,3 +165,58 @@
   font-size: 24rpx;
   text-align: center;
 }
+
+/* ========== 昵称输入界面 ========== */
+.nickname-input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nickname-title {
+  display: block;
+  font-size: 38rpx;
+  font-weight: 700;
+  color: #2D2D2D;
+  margin-top: 20rpx;
+  text-align: center;
+}
+
+.nickname-desc {
+  display: block;
+  font-size: 24rpx;
+  color: #8C8C8C;
+  text-align: center;
+  margin-top: 12rpx;
+  line-height: 1.8;
+}
+
+.nickname-input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 32rpx;
+  padding: 20rpx 24rpx;
+  font-size: 28rpx;
+  border-radius: 16rpx;
+  border: 2rpx solid #E8E2D8;
+  background: #FFFFFF;
+  color: #2D2D2D;
+}
+
+.nickname-input-placeholder {
+  color: #B0B0B0;
+}
+
+.nickname-actions {
+  width: 100%;
+  margin-top: 32rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.nickname-actions .btn-primary,
+.nickname-actions .btn-outline {
+  width: 100%;
+  box-sizing: border-box;
+}

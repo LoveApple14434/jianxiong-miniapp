@@ -3,34 +3,60 @@
   <view class="login-bg login-bg-right"></view>
 
   <view class="login-card card-paper">
-    <view class="login-brand">
-      <view class="brand-mark">健</view>
-      <text class="brand-title">健雄书韵</text>
-      <text class="brand-subtitle">微信授权登录</text>
-    </view>
-
-    <view class="profile-preview">
-      <view class="preview-avatar preview-avatar-fallback">
-        <text class="preview-avatar-text">健</text>
+    <view wx:if="{{!userProfileReady}}">
+      <view class="login-brand">
+        <view class="brand-mark">健</view>
+        <text class="brand-title">健雄书韵</text>
+        <text class="brand-subtitle">微信授权登录</text>
       </view>
-      <text class="preview-name">{{previewProfile.nickName}}</text>
-      <text class="preview-signature">{{previewProfile.signature}}</text>
-    </view>
 
-    <view class="benefit-list">
-      <view class="benefit-item" wx:for="{{benefits}}" wx:key="title">
-        <text class="benefit-title">{{item.title}}</text>
-        <text class="benefit-desc">{{item.desc}}</text>
+      <view class="profile-preview">
+        <view class="preview-avatar preview-avatar-fallback">
+          <text class="preview-avatar-text">健</text>
+        </view>
+        <text class="preview-name">{{previewProfile.nickName}}</text>
+        <text class="preview-signature">{{previewProfile.signature}}</text>
       </view>
-    </view>
 
-    <view class="login-actions">
-      <view class="btn-primary login-btn {{loading ? 'loading' : ''}}" bindtap="handleLogin">
-        {{loading ? '登录中...' : '微信一键登录'}}
+      <view class="benefit-list">
+        <view class="benefit-item" wx:for="{{benefits}}" wx:key="title">
+          <text class="benefit-title">{{item.title}}</text>
+          <text class="benefit-desc">{{item.desc}}</text>
+        </view>
       </view>
-      <view class="btn-outline login-back-btn" bindtap="goProfile">返回个人中心</view>
+
+      <view class="login-actions">
+        <view class="btn-primary login-btn {{loading ? 'loading' : ''}}" bindtap="handleLogin">
+          {{loading ? '登录中...' : '微信一键登录'}}
+        </view>
+        <view class="btn-outline login-back-btn" bindtap="goProfile">返回个人中心</view>
+      </view>
+
+      <text wx:if="{{errorMessage}}" class="login-error">{{errorMessage}}</text>
     </view>
 
-    <text wx:if="{{errorMessage}}" class="login-error">{{errorMessage}}</text>
+    <view wx:else class="nickname-input-group">
+      <text class="nickname-title">微信昵称已保护</text>
+      <text class="nickname-desc">微信方面限制了昵称获取，请为你的账户设置一个昵称</text>
+
+      <input
+        class="nickname-input"
+        type="text"
+        placeholder="请输入昵称"
+        value="{{customNickName}}"
+        bindinput="onNickNameInput"
+        maxlength="20"
+        placeholder-class="nickname-input-placeholder"
+      />
+
+      <view class="nickname-actions">
+        <view class="btn-primary {{loading ? 'loading' : ''}}" bindtap="onConfirmNickName">
+          {{loading ? '确认中...' : '确认并登录'}}
+        </view>
+        <view class="btn-outline" bindtap="onCancelNickName">取消</view>
+      </view>
+
+      <text wx:if="{{errorMessage}}" class="login-error">{{errorMessage}}</text>
+    </view>
   </view>
 </view>

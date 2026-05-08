@@ -19,6 +19,9 @@ Page({
   data: {
     loading: false,
     errorMessage: '',
+    userProfileReady: false,
+    wechatProfile: null,
+    customNickName: '',
     previewProfile: {
       nickName: '健雄学子',
       signature: '登录后同步你的阅读记录与共读进度'
@@ -48,6 +51,8 @@ Page({
       }
 
       const userProfile = profileResult.userInfo || {}
+      const isDemoted = userProfile.is_demote || userProfile.nickName === '微信用户'
+
       console.log('[login] wx.getUserProfile result:', {
         nickName: userProfile.nickName,
         avatarUrl: userProfile.avatarUrl,
@@ -56,23 +61,55 @@ Page({
         province: userProfile.province,
         city: userProfile.city,
         language: userProfile.language,
+        is_demote: userProfile.is_demote,
         raw: userProfile
       })
 
+      if (isDemoted) {
+        console.log('[login] WeChat profile demoted; prompting for custom nickname')
+        this.setData({
+          loading: false,
+          userProfileReady: true,
+          wechatProfile: userProfile,
+          loginResult
+        })
+        return
+      }
+
+      this.wechatProfile = userProfile
+      this.loginResult = loginResult
+      await this.performLogin(userProfile)
+    } catch (error) {
+      const errorMessage = error && (error.message || error.errMsg) ? (error.message || error.errMsg) : '登录失败，请稍后重试'
+
+      this.setData({ errorMessage })
+      wx.showToast({ title: errorMessage, icon: 'none' })
+    } finally {
+      this.setData({ loading: false })
+    }
+  },
+
+  async performLogin(userProfile) {
+    this.setData({ loading: true, errorMessage: '' })
+
+    try {
+      const effectiveProfile = {
+        nickName: this.data.customNickName && this.data.customNickName.trim() ? this.data.customNickName.trim() : userProfile.nickName,
+        nickname: this.data.customNickName && this.data.customNickName.trim() ? this.data.customNickName.trim() : userProfile.nickName,
+        avatarUrl: userProfile.avatarUrl,
+        avatar: userProfile.avatarUrl,
+        gender: userProfile.gender,
+        country: userProfile.country,
+        province: userProfile.province,
+        city: userProfile.city,
+        language: userProfile.language
+      }
+
+      const loginResult = this.loginResult
       const loginPayload = {
         code: loginResult.code,
         clientId: typeof getApp === 'function' && getApp().getClientId ? getApp().getClientId() : '',
-        profile: {
-          nickName: userProfile.nickName,
-          nickname: userProfile.nickName,
-          avatarUrl: userProfile.avatarUrl,
-          avatar: userProfile.avatarUrl,
-          gender: userProfile.gender,
-          country: userProfile.country,
-          province: userProfile.province,
-          city: userProfile.city,
-          language: userProfile.language
-        }
+        profile: effectiveProfile
       }
 
       console.log('[login] request payload:', {
@@ -109,6 +146,13 @@ Page({
       setTimeout(() => {
         wx.switchTab({ url: '/pages/profile/profile' })
       }, 250)
+
+      this.setData({
+        userProfileReady: false,
+        customNickName: '',
+        wechatProfile: null,
+        loginResult: null
+      })
     } catch (error) {
       const errorMessage = error && (error.message || error.errMsg) ? (error.message || error.errMsg) : '登录失败，请稍后重试'
 
@@ -117,6 +161,30 @@ Page({
     } finally {
       this.setData({ loading: false })
     }
+  },
+
+  onNickNameInput(e) {
+    this.setData({ customNickName: e.detail.value })
+  },
+
+  async onConfirmNickName() {
+    const nickName = this.data.customNickName ? this.data.customNickName.trim() : ''
+
+    if (!nickName) {
+      wx.showToast({ title: '请输入昵称', icon: 'none' })
+      return
+    }
+
+    await this.performLogin(this.data.wechatProfile)
+  },
+
+  onCancelNickName() {
+    this.setData({
+      userProfileReady: false,
+      customNickName: '',
+      wechatProfile: null,
+      loginResult: null
+    })
   },
 
   goProfile() {
