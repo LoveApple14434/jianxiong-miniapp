@@ -29,7 +29,7 @@ const parseDurationToSeconds = value => {
 }
 
 module.exports = {
-  port: Number(process.env.PORT) || 3000,
+  port: Number(process.env.PORT) || 3033,
   jwtSecret: process.env.JWT_SECRET || 'jianxiong-miniapp-login-secret',
   wechatAppId: process.env.WECHAT_APP_ID || '',
   wechatAppSecret: process.env.WECHAT_APP_SECRET || '',
