@@ -1,3 +1,13 @@
+const { request } = require('./utils/util')
+
+const STORAGE_KEYS = {
+  token: 'login_token',
+  userInfo: 'login_user_info',
+  expiresAt: 'login_token_expires_at'
+}
+
+const DEFAULT_API_BASE_URL = 'http://127.0.0.1:3000/api'
+
 App({
   globalData: {
     theme: {
@@ -9,73 +19,127 @@ App({
       subTextColor: '#8C8C8C',
       lightGold: '#E8D5B5'
     },
-    // 用户信息
-    userInfo: null,
-    token: null,
-    isLogin: false
+    apiBaseUrl: "https://loveapple.icu/api2",
+    auth: {
+      token: '',
+      userInfo: null,
+      expiresAt: 0,
+      isLogin: false,
+      ready: false
+    }
   },
 
   onLaunch() {
     console.log('健雄书韵小程序启动')
-    this.checkLoginStatus()
+    this.restoreLoginState()
   },
 
-  // 检查登录状态
-  checkLoginStatus() {
-    try {
-      const userInfo = wx.getStorageSync('userInfo')
-      const token = wx.getStorageSync('token')
+  getAuthState() {
+    return { ...this.globalData.auth }
+  },
 
-      if (userInfo && token) {
-        this.globalData.userInfo = userInfo
-        this.globalData.token = token
-        this.globalData.isLogin = true
-      } else {
-        this.globalData.isLogin = false
-      }
-    } catch (error) {
-      console.error('检查登录状态失败:', error)
-      this.globalData.isLogin = false
+  isUserLogin() {
+    return Boolean(this.globalData.auth.token && this.globalData.auth.isLogin)
+  },
+
+  getUserInfo() {
+    return this.globalData.auth.userInfo
+  },
+
+  getToken() {
+    return this.globalData.auth.token
+  },
+
+  setLoginInfo({ token, userInfo, expiresAt }) {
+    const loginExpiresAt = expiresAt || (Date.now() + 7 * 24 * 60 * 60 * 1000)
+
+    wx.setStorageSync(STORAGE_KEYS.token, token)
+    wx.setStorageSync(STORAGE_KEYS.userInfo, userInfo)
+    wx.setStorageSync(STORAGE_KEYS.expiresAt, loginExpiresAt)
+
+    this.globalData.auth = {
+      token,
+      userInfo,
+      expiresAt: loginExpiresAt,
+      isLogin: true,
+      ready: true
+    }
+
+    return this.globalData.auth
+  },
+
+  clearLoginInfo() {
+    wx.removeStorageSync(STORAGE_KEYS.token)
+    wx.removeStorageSync(STORAGE_KEYS.userInfo)
+    wx.removeStorageSync(STORAGE_KEYS.expiresAt)
+
+    this.globalData.auth = {
+      token: '',
+      userInfo: null,
+      expiresAt: 0,
+      isLogin: false,
+      ready: true
     }
   },
 
-  // 获取登录状态
-  isUserLogin() {
-    return this.globalData.isLogin
+  async refreshLoginStatus() {
+    const token = wx.getStorageSync(STORAGE_KEYS.token)
+    const userInfo = wx.getStorageSync(STORAGE_KEYS.userInfo)
+    const expiresAt = Number(wx.getStorageSync(STORAGE_KEYS.expiresAt)) || 0
+
+    if (!token) {
+      this.clearLoginInfo()
+      return false
+    }
+
+    if (expiresAt && expiresAt <= Date.now()) {
+      this.clearLoginInfo()
+      return false
+    }
+
+    this.globalData.auth = {
+      token,
+      userInfo,
+      expiresAt,
+      isLogin: true,
+      ready: false
+    }
+
+    try {
+      const authState = await request({
+        url: '/auth/me',
+        method: 'GET'
+      })
+
+      this.setLoginInfo({
+        token,
+        userInfo: authState.user,
+        expiresAt: authState.expiresAt
+      })
+
+      return true
+    } catch (error) {
+      this.clearLoginInfo()
+      return false
+    }
   },
 
-  // 获取用户信息
-  getUserInfo() {
-    return this.globalData.userInfo
+  async restoreLoginState() {
+    await this.refreshLoginStatus()
+    this.globalData.auth.ready = true
   },
 
-  // 获取Token
-  getToken() {
-    return this.globalData.token
-  },
+  ensureLogin(redirectUrl) {
+    if (this.isUserLogin()) {
+      return true
+    }
 
-  // 设置用户登录状态
-  setLoginInfo(userInfo, token) {
-    this.globalData.userInfo = userInfo
-    this.globalData.token = token
-    this.globalData.isLogin = true
-    wx.setStorageSync('userInfo', userInfo)
-    wx.setStorageSync('token', token)
-  },
+    wx.showToast({ title: '请先登录', icon: 'none' })
 
-  // 登出
-  logout() {
-    this.globalData.userInfo = null
-    this.globalData.token = null
-    this.globalData.isLogin = false
-    wx.removeStorageSync('userInfo')
-    wx.removeStorageSync('token')
-    wx.removeStorageSync('savedPhone')
-    wx.removeStorageSync('savedPassword')
-    
-    // 跳转到登录页
-    wx.reLaunch({
-      url: '/pages/login/login'
-    })
+    if (redirectUrl) {
+      wx.navigateTo({ url: redirectUrl })
+    }
+
+    return false
   }
 })

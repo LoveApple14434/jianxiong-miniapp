@@ -1,77 +1,36 @@
-<!-- 登录页面 -->
-<view class="page-login">
-  <!-- 顶部品牌信息 -->
-  <view class="login-header">
-    <text class="brand-icon">📚</text>
-    <text class="brand-title">健雄书韵</text>
-    <text class="brand-desc">探索科学之光，感悟巾帼风采</text>
-  </view>
+<view class="login-page">
+  <view class="login-bg login-bg-left"></view>
+  <view class="login-bg login-bg-right"></view>
 
-  <!-- 登录表单 -->
-  <view class="login-form">
-    <!-- 已授权状态提示 -->
-    <view class="auth-status" wx:if="{{userInfoAuth && phoneNumberAuth}}">
-      <text class="status-icon">✓</text>
-      <text class="status-text">已授权用户信息和手机号</text>
+  <view class="login-card card-paper">
+    <view class="login-brand">
+      <view class="brand-mark">健</view>
+      <text class="brand-title">健雄书韵</text>
+      <text class="brand-subtitle">微信授权登录</text>
     </view>
 
-    <!-- 用户信息授权 -->
-    <view class="form-group" wx:if="{{!userInfoAuth}}">
-      <button 
-        class="btn btn-auth" 
-        open-type="getUserInfo"
-        bindgetuserinfo="onGetUserInfo"
-        lang="zh_CN"
-      >
-        <text class="btn-icon">👤</text>
-        <text>授权用户信息</text>
-      </button>
-    </view>
-
-    <!-- 手机号授权 -->
-    <view class="form-group" wx:if="{{!phoneNumberAuth}}">
-      <button 
-        class="btn btn-auth" 
-        open-type="getPhoneNumber"
-        bindgetphonenumber="onGetPhoneNumber"
-      >
-        <text class="btn-icon">📱</text>
-        <text>授权手机号</text>
-      </button>
-    </view>
-
-    <!-- 登录按钮 -->
-    <view class="form-buttons" wx:if="{{userInfoAuth && phoneNumberAuth}}">
-      <button 
-        class="btn btn-primary" 
-        bindtap="performLogin"
-        disabled="{{loading}}"
-        loading="{{loading}}"
-      >
-        {{loading ? '登录中...' : '开始使用'}}
-      </button>
-    </view>
-
-    <!-- 已授权后的用户信息显示 -->
-    <view class="user-info-display" wx:if="{{userInfoAuth && userInfoFromWeChat}}">
-      <view class="user-avatar">
-        <image src="{{userInfoFromWeChat.avatarUrl}}" mode="aspectFill" />
+    <view class="profile-preview">
+      <view class="preview-avatar preview-avatar-fallback">
+        <text class="preview-avatar-text">健</text>
       </view>
-      <text class="user-name">{{userInfoFromWeChat.nickName}}</text>
-      <text class="user-gender">{{userInfoFromWeChat.gender === 1 ? '男' : userInfoFromWeChat.gender === 2 ? '女' : '保密'}}</text>
+      <text class="preview-name">{{previewProfile.nickName}}</text>
+      <text class="preview-signature">{{previewProfile.signature}}</text>
     </view>
-  </view>
 
-  <!-- 说明文案 -->
-  <view class="login-info">
-    <text class="info-title">登录说明</text>
-    <text class="info-text">我们需要您的用户信息和手机号来完成登录。您的信息将严格保密。</text>
-    <text class="info-text">点击授权按钮，您可以在微信设置中随时修改授权状态。</text>
-  </view>
+    <view class="benefit-list">
+      <view class="benefit-item" wx:for="{{benefits}}" wx:key="title">
+        <text class="benefit-title">{{item.title}}</text>
+        <text class="benefit-desc">{{item.desc}}</text>
+      </view>
+    </view>
 
-  <!-- 底部装饰元素 -->
-  <view class="login-footer">
-    <text class="footer-text">© 2024 健雄书韵</text>
+    <view class="login-actions">
+      <view class="btn-primary login-btn {{loading ? 'loading' : ''}}" bindtap="handleLogin">
+        {{loading ? '登录中...' : '微信一键登录'}}
+      </view>
+      <view class="btn-outline login-back-btn" bindtap="goProfile">返回个人中心</view>
+    </view>
+
+    <text wx:if="{{errorMessage}}" class="login-error">{{errorMessage}}</text>
   </view>
 </view>
-

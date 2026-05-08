@@ -13,119 +13,160 @@ const formatNumber = n => {
   return n[1] ? n : `0${n}`
 }
 
-// 验证手机号格式
-const validatePhone = phone => {
-  const phoneRegex = /^1[3-9]\d{9}$/
-  return phoneRegex.test(phone)
+const STORAGE_KEYS = {
+  token: 'login_token',
+  userInfo: 'login_user_info',
+  expiresAt: 'login_token_expires_at'
 }
 
-// 验证密码强度
-const validatePassword = password => {
-  return password && password.length >= 6
+const DEFAULT_API_BASE_URL = 'http://127.0.0.1:3000/api'
+
+const isAbsoluteUrl = url => /^https?:\/\//.test(url)
+
+const resolveUrl = url => {
+  if (isAbsoluteUrl(url)) {
+    return url
+  }
+
+  const app = typeof getApp === 'function' ? getApp() : null
+  const baseUrl = app && app.globalData && app.globalData.apiBaseUrl ? app.globalData.apiBaseUrl : DEFAULT_API_BASE_URL
+  const normalizedPath = url.startsWith('/') ? url : `/${url}`
+
+  return `${baseUrl}${normalizedPath}`
 }
 
-// 验证邮箱格式
-const validateEmail = email => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return emailRegex.test(email)
+const getStoredAuth = () => {
+  const token = wx.getStorageSync(STORAGE_KEYS.token)
+  const userInfo = wx.getStorageSync(STORAGE_KEYS.userInfo)
+  const expiresAt = Number(wx.getStorageSync(STORAGE_KEYS.expiresAt)) || 0
+
+  return {
+    token,
+    userInfo,
+    expiresAt,
+    isLogin: Boolean(token) && (!expiresAt || expiresAt > Date.now())
+  }
 }
 
-// 检查用户是否已登录
 const isUserLogin = () => {
-  const app = getApp()
-  return app.isUserLogin()
+  const app = typeof getApp === 'function' ? getApp() : null
+
+  if (app && typeof app.isUserLogin === 'function') {
+    return app.isUserLogin()
+  }
+
+  return getStoredAuth().isLogin
 }
 
-// 获取用户登录信息
 const getLoginInfo = () => {
-  const app = getApp()
+  const app = typeof getApp === 'function' ? getApp() : null
+
+  if (app && typeof app.getAuthState === 'function') {
+    return app.getAuthState()
+  }
+
+  return getStoredAuth()
+}
+
+const setLoginInfo = ({ token, userInfo, expiresAt }) => {
+  const app = typeof getApp === 'function' ? getApp() : null
+
+  if (app && typeof app.setLoginInfo === 'function') {
+    return app.setLoginInfo({ token, userInfo, expiresAt })
+  }
+
+  const loginExpiresAt = expiresAt || (Date.now() + 7 * 24 * 60 * 60 * 1000)
+
+  wx.setStorageSync(STORAGE_KEYS.token, token)
+  wx.setStorageSync(STORAGE_KEYS.userInfo, userInfo)
+  wx.setStorageSync(STORAGE_KEYS.expiresAt, loginExpiresAt)
+
   return {
-    userInfo: app.getUserInfo(),
-    token: app.getToken(),
-    isLogin: app.isUserLogin()
+    token,
+    userInfo,
+    expiresAt: loginExpiresAt,
+    isLogin: true,
+    ready: true
   }
 }
 
-// 设置登录信息
-const setLoginInfo = (userInfo, token) => {
-  const app = getApp()
-  app.setLoginInfo(userInfo, token)
-}
+const clearLoginInfo = () => {
+  const app = typeof getApp === 'function' ? getApp() : null
 
-// 登出
-const logout = () => {
-  const app = getApp()
-  app.logout()
-}
-
-// 检查页面是否需要登录
-const checkPageLogin = (options = {}) => {
-  const { requireLogin = true, skipPages = [] } = options
-  
-  return {
-    onLoad(query) {
-      const currentPath = this.route
-      const isSkipPage = skipPages.includes(currentPath)
-      
-      if (requireLogin && !isSkipPage && !isUserLogin()) {
-        wx.reLaunch({
-          url: '/pages/login/login'
-        })
-      }
-    }
+  if (app && typeof app.clearLoginInfo === 'function') {
+    return app.clearLoginInfo()
   }
+
+  wx.removeStorageSync(STORAGE_KEYS.token)
+  wx.removeStorageSync(STORAGE_KEYS.userInfo)
+  wx.removeStorageSync(STORAGE_KEYS.expiresAt)
 }
 
-// 网络请求拦截器
-const request = (options = {}) => {
-  const { url, method = 'GET', data, header = {} } = options
-  
+const validatePhone = phone => /^1\d{10}$/.test(String(phone || '').trim())
+
+const validatePassword = password => typeof password === 'string' && password.trim().length >= 6
+
+const validateEmail = email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim())
+
+const request = ({ url, method = 'GET', data = {}, header = {}, auth = true }) => {
+  const app = typeof getApp === 'function' ? getApp() : null
+  const token = auth ? (app && typeof app.getToken === 'function' ? app.getToken() : wx.getStorageSync(STORAGE_KEYS.token)) : ''
+
   return new Promise((resolve, reject) => {
-    const token = getLoginInfo().token
-    
-    // 添加token到请求头
-    const finalHeader = {
-      ...header,
-      'Content-Type': 'application/json'
-    }
-    
-    if (token) {
-      finalHeader['Authorization'] = `Bearer ${token}`
-    }
-
     wx.request({
-      url,
+      url: resolveUrl(url),
       method,
       data,
-      header: finalHeader,
-      success: (res) => {
-        if (res.statusCode === 401) {
-          // Token过期或无效，需要重新登录
-          logout()
-          reject(new Error('登录过期，请重新登录'))
-        } else if (res.statusCode === 200 || res.statusCode === 201) {
-          resolve(res.data)
-        } else {
-          reject(new Error(res.data?.msg || '请求失败'))
-        }
+      header: {
+        'content-type': 'application/json',
+        ...header,
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
       },
-      fail: (err) => {
-        reject(err)
+      success(res) {
+        const payload = res.data || {}
+
+        if (res.statusCode >= 200 && res.statusCode < 300 && payload.code === 0) {
+          resolve(payload.data)
+          return
+        }
+
+        reject({
+          message: payload.message || '请求失败',
+          statusCode: res.statusCode,
+          response: res,
+          data: payload
+        })
+      },
+      fail(error) {
+        reject(error)
       }
     })
   })
 }
 
+const checkPageLogin = ({ redirectUrl = '/pages/login/login', silent = false } = {}) => {
+  if (isUserLogin()) {
+    return true
+  }
+
+  if (!silent) {
+    wx.showToast({ title: '请先登录', icon: 'none' })
+  }
+
+  wx.navigateTo({ url: redirectUrl })
+  return false
+}
+
 module.exports = {
   formatTime,
-  formatNumber,
   validatePhone,
   validatePassword,
   validateEmail,
   isUserLogin,
   getLoginInfo,
   setLoginInfo,
-  logout,
+  clearLoginInfo,
   checkPageLogin,
-  request
+  request,
+  STORAGE_KEYS
 }
