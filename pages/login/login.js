@@ -48,25 +48,53 @@ Page({
       }
 
       const userProfile = profileResult.userInfo || {}
+      console.log('[login] wx.getUserProfile result:', {
+        nickName: userProfile.nickName,
+        avatarUrl: userProfile.avatarUrl,
+        gender: userProfile.gender,
+        country: userProfile.country,
+        province: userProfile.province,
+        city: userProfile.city,
+        language: userProfile.language,
+        raw: userProfile
+      })
+
+      const loginPayload = {
+        code: loginResult.code,
+        clientId: typeof getApp === 'function' && getApp().getClientId ? getApp().getClientId() : '',
+        profile: {
+          nickName: userProfile.nickName,
+          nickname: userProfile.nickName,
+          avatarUrl: userProfile.avatarUrl,
+          avatar: userProfile.avatarUrl,
+          gender: userProfile.gender,
+          country: userProfile.country,
+          province: userProfile.province,
+          city: userProfile.city,
+          language: userProfile.language
+        }
+      }
+
+      console.log('[login] request payload:', {
+        code: loginPayload.code,
+        clientId: loginPayload.clientId,
+        nickName: loginPayload.profile.nickName,
+        avatarUrl: loginPayload.profile.avatarUrl
+      })
+
       const loginResponse = await request({
         url: '/auth/login',
         method: 'POST',
         auth: false,
-        data: {
-          code: loginResult.code,
-          clientId: typeof getApp === 'function' && getApp().getClientId ? getApp().getClientId() : '',
-          profile: {
-            nickName: userProfile.nickName,
-            nickname: userProfile.nickName,
-            avatarUrl: userProfile.avatarUrl,
-            avatar: userProfile.avatarUrl,
-            gender: userProfile.gender,
-            country: userProfile.country,
-            province: userProfile.province,
-            city: userProfile.city,
-            language: userProfile.language
-          }
-        }
+        data: loginPayload
+      })
+
+      console.log('[login] response user:', {
+        nickName: loginResponse.user && loginResponse.user.nickName,
+        avatarUrl: loginResponse.user && loginResponse.user.avatarUrl,
+        previousLoginAt: loginResponse.user && loginResponse.user.previousLoginAt,
+        loginCount: loginResponse.user && loginResponse.user.loginCount,
+        sessionType: loginResponse.sessionType
       })
 
       const app = getApp()

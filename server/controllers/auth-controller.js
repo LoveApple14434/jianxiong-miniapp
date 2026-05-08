@@ -9,6 +9,22 @@ const login = async (req, res) => {
   try {
     const { code, clientId = '', profile = {} } = req.body || {}
 
+    console.log('[auth/login] incoming payload:', {
+      code: code ? '[present]' : '[missing]',
+      clientId,
+      profile: {
+        nickName: profile.nickName,
+        nickname: profile.nickname,
+        avatarUrl: profile.avatarUrl,
+        avatar: profile.avatar,
+        gender: profile.gender,
+        country: profile.country,
+        province: profile.province,
+        city: profile.city,
+        language: profile.language
+      }
+    })
+
     if (!code) {
       return res.status(400).json({ code: 400, message: '缺少登录凭证' })
     }
@@ -21,6 +37,16 @@ const login = async (req, res) => {
       session
     })
     const publicUser = toPublicUser(user)
+
+    console.log('[auth/login] resolved user:', {
+      openid: session.openid,
+      nickName: publicUser.nickName,
+      avatarUrl: publicUser.avatarUrl,
+      previousLoginAt: publicUser.previousLoginAt,
+      loginCount: publicUser.loginCount,
+      sessionType: session.mock ? 'mock' : 'wechat'
+    })
+
     const token = signToken({ uid: publicUser.id, openid: session.openid })
 
     return res.json({
