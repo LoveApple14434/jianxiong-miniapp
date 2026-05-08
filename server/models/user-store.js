@@ -68,7 +68,8 @@ const toPublicUser = user => ({
   loginCount: user.loginCount,
   createdAt: user.createdAt,
   updatedAt: user.updatedAt,
-  lastLoginAt: user.lastLoginAt
+  lastLoginAt: user.lastLoginAt,
+  previousLoginAt: user.previousLoginAt || null
 })
 
 const findByOpenid = async openid => {
@@ -91,6 +92,7 @@ const upsertByOpenid = async ({ openid, profile, session }) => {
       unionid: session.unionid || existing.unionid || '',
       loginCount: (existing.loginCount || 0) + 1,
       updatedAt: now,
+      previousLoginAt: existing.lastLoginAt || existing.previousLoginAt || null,
       lastLoginAt: now
     }
 
@@ -111,6 +113,7 @@ const upsertByOpenid = async ({ openid, profile, session }) => {
     loginCount: 1,
     createdAt: now,
     updatedAt: now,
+    previousLoginAt: null,
     lastLoginAt: now
   }
 

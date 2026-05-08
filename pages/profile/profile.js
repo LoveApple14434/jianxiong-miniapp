@@ -23,15 +23,15 @@ Page({
     ]
   },
 
-  formatLastLoginText(lastLoginAt) {
-    if (!lastLoginAt) {
-      return '已登录，可同步阅读进度与收藏'
+  formatLastLoginText(previousLoginAt) {
+    if (!previousLoginAt) {
+      return '首次登录'
     }
 
-    const date = new Date(lastLoginAt)
+    const date = new Date(previousLoginAt)
 
     if (Number.isNaN(date.getTime())) {
-      return '已登录，可同步阅读进度与收藏'
+      return '首次登录'
     }
 
     const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -51,7 +51,7 @@ Page({
           ...authState.userInfo,
           avatarUrl: authState.userInfo.avatarUrl || '',
           avatarText: authState.userInfo.nickName ? authState.userInfo.nickName.charAt(0) : '健',
-          lastLoginText: this.formatLastLoginText(authState.userInfo.lastLoginAt)
+          lastLoginText: this.formatLastLoginText(authState.userInfo.previousLoginAt)
         }
       : null
 

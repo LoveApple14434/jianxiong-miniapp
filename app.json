@@ -5,8 +5,7 @@
     "pages/timeline/timeline",
     "pages/reading/reading",
     "pages/community/community",
-    "pages/profile/profile",
-    "pages/login/login"
+    "pages/profile/profile"
   ],
   "window": {
     "navigationBarBackgroundColor": "#5B2D8E",

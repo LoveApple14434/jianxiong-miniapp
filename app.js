@@ -19,7 +19,7 @@ App({
       subTextColor: '#8C8C8C',
       lightGold: '#E8D5B5'
     },
-    apiBaseUrl: "https://loveapple.icu/api2",
+    apiBaseUrl: "https://loveapple.icu/api2/api",
     auth: {
       token: '',
       userInfo: null,

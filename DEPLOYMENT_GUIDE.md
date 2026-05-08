@@ -65,12 +65,14 @@ cp .env.example .env
 编辑 `.env` 文件，填入微信配置：
 
 ```env
-WECHAT_APP_ID=wxb123456789abcdef
-WECHAT_APP_SECRET=1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p
+WECHAT_APP_ID=your_wechat_app_id
+WECHAT_APP_SECRET=your_wechat_app_secret
 JWT_SECRET=your_very_long_and_random_secret_key_min_32_chars
 PORT=3000
 NODE_ENV=development
 ```
+
+把上面的占位符替换为你在微信公众平台申请到的真实 AppID 和 AppSecret，不要把真实值提交到仓库。
 
 #### 4. 复制 API 实现
 
