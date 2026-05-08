@@ -6,7 +6,7 @@
 const util = require('../utils/util.js')
 
 // API 基础 URL
-const API_BASE_URL = 'https://api.example.com' // 需要替换为实际的 API 地址
+const API_BASE_URL = 'https://api2.loveapple.icu' // 需要替换为实际的 API 地址
 
 /**
  * 用户认证相关 API

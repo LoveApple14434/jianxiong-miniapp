@@ -9,7 +9,10 @@ Page({
     hasPhoneNumber: false,
     // 授权状态
     userInfoAuth: false,
-    phoneNumberAuth: false
+    phoneNumberAuth: false,
+    phoneAuthCode: '',
+    encryptedData: '',
+    iv: ''
   },
 
   onLoad() {
@@ -28,17 +31,27 @@ Page({
     wx.getSetting({
       success: (res) => {
         const userInfoScope = res.authSetting['scope.userInfo']
-        const phoneScope = res.authSetting['scope.phoneNumber']
         
         this.setData({
-          userInfoAuth: userInfoScope === true,
-          phoneNumberAuth: phoneScope === true
+          userInfoAuth: userInfoScope === true
         })
 
-        // 如果已授权用户信息和手机号，可以直接登录
-        if (userInfoScope && phoneScope) {
-          this.attemptAutoLogin()
+        // 如果用户已授权用户信息，预填信息，但不假设手机号权限已存在
+        if (userInfoScope) {
+          this.prefillUserInfo()
         }
+      }
+    })
+  },
+
+  // 预填已授权的用户信息
+  prefillUserInfo() {
+    wx.getUserInfo({
+      success: (res) => {
+        this.setData({
+          userInfoFromWeChat: res.userInfo,
+          hasUserInfo: true
+        })
       }
     })
   },
@@ -67,11 +80,16 @@ Page({
   // 获取手机号授权
   onGetPhoneNumber(e) {
     if (e.detail.errMsg === 'getPhoneNumber:ok') {
+      const phoneAuthCode = e.detail.code || ''
+      const encryptedData = e.detail.encryptedData || ''
+      const iv = e.detail.iv || ''
+
       this.setData({
         phoneNumberAuth: true,
         hasPhoneNumber: true,
-        encryptedData: e.detail.encryptedData,
-        iv: e.detail.iv
+        phoneAuthCode,
+        encryptedData,
+        iv
       })
 
       // 如果已有用户信息授权，可以直接登录
@@ -84,28 +102,6 @@ Page({
         icon: 'none'
       })
     }
-  },
-
-  // 尝试自动登录（用户已授权）
-  attemptAutoLogin() {
-    // 获取用户信息
-    wx.getUserInfo({
-      success: (res) => {
-        this.setData({
-          userInfoFromWeChat: res.userInfo,
-          hasUserInfo: true
-        })
-
-        // 检查手机号授权
-        wx.getSetting({
-          success: (settingRes) => {
-            if (settingRes.authSetting['scope.phoneNumber']) {
-              this.performLogin()
-            }
-          }
-        })
-      }
-    })
   },
 
   // 执行登录流程
@@ -133,12 +129,13 @@ Page({
       })
 
       // 第二步：调用后端登录接口
-      const phone = this.data.data?.phone
       const encryptedData = this.data.encryptedData
       const iv = this.data.iv
+      const phoneAuthCode = this.data.phoneAuthCode
 
-      const response = await authAPI.wechatLogin({
+      const response = await authAPI.wechatPhoneLogin({
         code: loginRes,
+        phoneAuthCode,
         encryptedData,
         iv,
         userInfo: this.data.userInfoFromWeChat
