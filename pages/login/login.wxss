@@ -166,14 +166,14 @@
   text-align: center;
 }
 
-/* ========== 昵称输入界面 ========== */
-.nickname-input-group {
+/* ========== 头像昵称填写页（profile 步骤） ========== */
+.profile-fill-group {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.nickname-title {
+.profile-fill-title {
   display: block;
   font-size: 38rpx;
   font-weight: 700;
@@ -182,7 +182,7 @@
   text-align: center;
 }
 
-.nickname-desc {
+.profile-fill-desc {
   display: block;
   font-size: 24rpx;
   color: #8C8C8C;
@@ -191,10 +191,42 @@
   line-height: 1.8;
 }
 
+/* 头像按钮 */
+.avatar-choose-btn {
+  width: 168rpx;
+  height: 168rpx;
+  margin-top: 32rpx;
+  padding: 0;
+  background: transparent;
+  border-radius: 50%;
+  border: 4rpx solid rgba(91, 45, 142, 0.12);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-choose-btn::after {
+  border: none;
+}
+
+.avatar-preview {
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-help-text {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 20rpx;
+  color: #8C8C8C;
+}
+
+/* 昵称输入框 */
 .nickname-input {
   width: 100%;
   box-sizing: border-box;
-  margin-top: 32rpx;
+  margin-top: 28rpx;
   padding: 20rpx 24rpx;
   font-size: 28rpx;
   border-radius: 16rpx;
@@ -207,7 +239,8 @@
   color: #B0B0B0;
 }
 
-.nickname-actions {
+/* 资料完成按钮组 */
+.profile-actions {
   width: 100%;
   margin-top: 32rpx;
   display: flex;
@@ -215,8 +248,44 @@
   gap: 20rpx;
 }
 
-.nickname-actions .btn-primary,
-.nickname-actions .btn-outline {
+.profile-actions .btn-primary,
+.profile-actions .btn-outline {
   width: 100%;
   box-sizing: border-box;
+}
+
+/* ========== 登录处理页（process 步骤） ========== */
+.process-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 360rpx;
+}
+
+.process-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 4rpx solid rgba(91, 45, 142, 0.1);
+  border-top-color: #5B2D8E;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.process-text {
+  font-size: 28rpx;
+  color: #8C8C8C;
 }

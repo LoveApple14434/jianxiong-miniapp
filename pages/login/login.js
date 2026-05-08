@@ -7,21 +7,14 @@ const waitWechatLogin = () => new Promise((resolve, reject) => {
   })
 })
 
-const waitUserProfile = () => new Promise((resolve, reject) => {
-  wx.getUserProfile({
-    desc: '用于完善你的个人中心与登录信息',
-    success: resolve,
-    fail: reject
-  })
-})
-
 Page({
   data: {
     loading: false,
     errorMessage: '',
-    userProfileReady: false,
-    wechatProfile: null,
-    customNickName: '',
+    loginStep: 'welcome', // 'welcome' | 'profile' | 'process'
+    loginCode: '',
+    avatarUrl: 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0',
+    nickName: '',
     previewProfile: {
       nickName: '健雄学子',
       signature: '登录后同步你的阅读记录与共读进度'
@@ -41,75 +34,143 @@ Page({
     this.setData({ loading: true, errorMessage: '' })
 
     try {
-      const [loginResult, profileResult] = await Promise.all([
-        waitWechatLogin(),
-        waitUserProfile()
-      ])
+      const loginResult = await new Promise((resolve, reject) => {
+        wx.login({
+          success: resolve,
+          fail: reject
+        })
+      })
 
       if (!loginResult.code) {
         throw new Error('未获取到微信登录凭证')
       }
 
-      const userProfile = profileResult.userInfo || {}
-      const isDemoted = userProfile.is_demote || userProfile.nickName === '微信用户'
+      console.log('[login] weChat code obtained')
 
-      console.log('[login] wx.getUserProfile result:', {
-        nickName: userProfile.nickName,
-        avatarUrl: userProfile.avatarUrl,
-        gender: userProfile.gender,
-        country: userProfile.country,
-        province: userProfile.province,
-        city: userProfile.city,
-        language: userProfile.language,
-        is_demote: userProfile.is_demote,
-        raw: userProfile
+      this.setData({
+        loading: false,
+        loginStep: 'profile',
+        loginCode: loginResult.code
       })
-
-      if (isDemoted) {
-        console.log('[login] WeChat profile demoted; prompting for custom nickname')
-        this.setData({
-          loading: false,
-          userProfileReady: true,
-          wechatProfile: userProfile,
-          loginResult
-        })
-        return
-      }
-
-      this.wechatProfile = userProfile
-      this.loginResult = loginResult
-      await this.performLogin(userProfile)
     } catch (error) {
-      const errorMessage = error && (error.message || error.errMsg) ? (error.message || error.errMsg) : '登录失败，请稍后重试'
+      const errorMessage = error && (error.message || error.errMsg) ? (error.message || error.errMsg) : '获取登录凭证失败'
 
-      this.setData({ errorMessage })
+      this.setData({ errorMessage, loading: false })
       wx.showToast({ title: errorMessage, icon: 'none' })
-    } finally {
-      this.setData({ loading: false })
     }
   },
 
-  async performLogin(userProfile) {
+  onChooseAvatar(e) {
+    const { avatarUrl } = e.detail
+
+    console.log('[login] avatar selected (temp):', avatarUrl)
+
+    this.setData({ avatarUrl })
+  },
+
+  onNicknameBlur(e) {
+    const nickName = e.detail.value
+
+    console.log('[login] nickname input:', nickName)
+
+    this.setData({ nickName })
+  },
+
+  async onConfirmProfile() {
+    const { avatarUrl, nickName } = this.data
+
+    if (!nickName || !nickName.trim()) {
+      wx.showToast({ title: '请输入昵称', icon: 'none' })
+      return
+    }
+
+    if (!avatarUrl || avatarUrl.includes('mmbiz.qpic.cn')) {
+      wx.showToast({ title: '请选择头像', icon: 'none' })
+      return
+    }
+
+    this.setData({ loading: true, loginStep: 'process' })
+
+    try {
+      const permanentAvatarUrl = await this.uploadAvatar(avatarUrl)
+
+      console.log('[login] avatar uploaded:', permanentAvatarUrl)
+
+      await this.performLogin(permanentAvatarUrl, nickName.trim())
+    } catch (error) {
+      const errorMessage = error && (error.message || error.errMsg) ? (error.message || error.errMsg) : '登录失败'
+
+      this.setData({ errorMessage, loading: false, loginStep: 'profile' })
+      wx.showToast({ title: errorMessage, icon: 'none' })
+    }
+  },
+
+  async uploadAvatar(tempFilePath) {
+    return new Promise((resolve, reject) => {
+      const app = typeof getApp === 'function' ? getApp() : null
+      const apiBaseUrl = app && app.globalData && app.globalData.apiBaseUrl
+        ? app.globalData.apiBaseUrl
+        : 'https://loveapple.icu/api2/api'
+
+      wx.uploadFile({
+        url: `${apiBaseUrl}/upload/avatar`,
+        filePath: tempFilePath,
+        name: 'avatar',
+        header: {
+          Authorization: `Bearer ${app && typeof app.getToken === 'function' ? (app.getToken() || '') : ''}`
+        },
+        success(res) {
+          try {
+            const response = JSON.parse(res.data)
+
+            if (res.statusCode >= 200 && res.statusCode < 300 && response.code === 0) {
+              resolve(response.data.permanentUrl)
+              return
+            }
+
+            reject(new Error(response.message || '头像上传失败'))
+          } catch (error) {
+            reject(new Error('头像上传响应解析失败'))
+          }
+        },
+        fail: reject
+      })
+    })
+  },
+
+  async performLogin(permanentAvatarUrl, nickName) {
     this.setData({ loading: true, errorMessage: '' })
 
     try {
-      const effectiveProfile = {
-        nickName: this.data.customNickName && this.data.customNickName.trim() ? this.data.customNickName.trim() : userProfile.nickName,
-        nickname: this.data.customNickName && this.data.customNickName.trim() ? this.data.customNickName.trim() : userProfile.nickName,
-        avatarUrl: userProfile.avatarUrl,
-        avatar: userProfile.avatarUrl,
-        gender: userProfile.gender,
-        country: userProfile.country,
-        province: userProfile.province,
-        city: userProfile.city,
-        language: userProfile.language
+      const loginResult = this.data.loginCode
+        ? { code: this.data.loginCode }
+        : await new Promise((resolve, reject) => {
+            wx.login({
+              success: resolve,
+              fail: reject
+            })
+          })
+
+      const code = loginResult.code
+
+      if (!code) {
+        throw new Error('缺少微信登录凭证')
       }
 
-      const loginResult = this.loginResult
       const loginPayload = {
-        code: loginResult.code,
+        code,
         clientId: typeof getApp === 'function' && getApp().getClientId ? getApp().getClientId() : '',
-        profile: effectiveProfile
+        profile: {
+          nickName,
+          nickname: nickName,
+          avatarUrl: permanentAvatarUrl,
+          avatar: permanentAvatarUrl,
+          gender: 0,
+          country: '',
+          province: '',
+          city: '',
+          language: 'zh_CN'
+        }
       }
 
       console.log('[login] request payload:', {
@@ -144,47 +205,21 @@ Page({
       wx.showToast({ title: '登录成功', icon: 'success' })
 
       setTimeout(() => {
+        this.setData({
+          loading: false,
+          loginStep: 'welcome',
+          loginCode: '',
+          avatarUrl: 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0',
+          nickName: ''
+        })
         wx.switchTab({ url: '/pages/profile/profile' })
       }, 250)
-
-      this.setData({
-        userProfileReady: false,
-        customNickName: '',
-        wechatProfile: null,
-        loginResult: null
-      })
     } catch (error) {
-      const errorMessage = error && (error.message || error.errMsg) ? (error.message || error.errMsg) : '登录失败，请稍后重试'
+      const errorMessage = error && (error.message || error.errMsg) ? (error.message || error.errMsg) : '登录失败'
 
-      this.setData({ errorMessage })
+      this.setData({ errorMessage, loading: false, loginStep: 'profile' })
       wx.showToast({ title: errorMessage, icon: 'none' })
-    } finally {
-      this.setData({ loading: false })
     }
-  },
-
-  onNickNameInput(e) {
-    this.setData({ customNickName: e.detail.value })
-  },
-
-  async onConfirmNickName() {
-    const nickName = this.data.customNickName ? this.data.customNickName.trim() : ''
-
-    if (!nickName) {
-      wx.showToast({ title: '请输入昵称', icon: 'none' })
-      return
-    }
-
-    await this.performLogin(this.data.wechatProfile)
-  },
-
-  onCancelNickName() {
-    this.setData({
-      userProfileReady: false,
-      customNickName: '',
-      wechatProfile: null,
-      loginResult: null
-    })
   },
 
   goProfile() {
