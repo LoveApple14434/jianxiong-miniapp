@@ -54,9 +54,12 @@ Page({
         auth: false,
         data: {
           code: loginResult.code,
+          clientId: typeof getApp === 'function' && getApp().getClientId ? getApp().getClientId() : '',
           profile: {
             nickName: userProfile.nickName,
+            nickname: userProfile.nickName,
             avatarUrl: userProfile.avatarUrl,
+            avatar: userProfile.avatarUrl,
             gender: userProfile.gender,
             country: userProfile.country,
             province: userProfile.province,
@@ -79,7 +82,7 @@ Page({
         wx.switchTab({ url: '/pages/profile/profile' })
       }, 250)
     } catch (error) {
-      const errorMessage = error && error.message ? error.message : '登录失败，请稍后重试'
+      const errorMessage = error && (error.message || error.errMsg) ? (error.message || error.errMsg) : '登录失败，请稍后重试'
 
       this.setData({ errorMessage })
       wx.showToast({ title: errorMessage, icon: 'none' })

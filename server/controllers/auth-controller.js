@@ -7,15 +7,16 @@ const durationToMilliseconds = seconds => seconds * 1000
 
 const login = async (req, res) => {
   try {
-    const { code, profile = {} } = req.body || {}
+    const { code, clientId = '', profile = {} } = req.body || {}
 
     if (!code) {
       return res.status(400).json({ code: 400, message: '缺少登录凭证' })
     }
 
-    const session = await exchangeCodeForSession(code)
+    const session = await exchangeCodeForSession({ code, clientId, profile })
     const user = await upsertByOpenid({
       openid: session.openid,
+      clientId,
       profile,
       session
     })

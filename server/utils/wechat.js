@@ -25,8 +25,8 @@ const requestJson = url => new Promise((resolve, reject) => {
     .on('error', reject)
 })
 
-const buildMockSession = code => {
-  const digest = sha1(`${code}:${config.wechatAppId || 'mock'}`)
+const buildMockSession = seed => {
+  const digest = sha1(`${seed}:${config.wechatAppId || 'mock'}`)
 
   return {
     openid: `mock_${digest.slice(0, 28)}`,
@@ -36,7 +36,26 @@ const buildMockSession = code => {
   }
 }
 
-const exchangeCodeForSession = async code => {
+const buildMockOpenidSeed = ({ code, clientId, profile } = {}) => {
+  if (clientId) {
+    return `client:${clientId}`
+  }
+
+  const profileSeed = profile && typeof profile === 'object'
+    ? [profile.nickName, profile.nickname, profile.avatarUrl, profile.avatar, profile.gender, profile.country, profile.province, profile.city, profile.language]
+        .map(item => (item === undefined || item === null ? '' : String(item).trim()))
+        .filter(Boolean)
+        .join('|')
+    : ''
+
+  if (profileSeed) {
+    return `profile:${profileSeed}`
+  }
+
+  return `code:${code}`
+}
+
+const exchangeCodeForSession = async ({ code, clientId, profile } = {}) => {
   if (!code) {
     throw new Error('缺少微信登录凭证')
   }
@@ -67,7 +86,7 @@ const exchangeCodeForSession = async code => {
     throw new Error('未配置微信小程序 AppID / AppSecret，无法完成登录')
   }
 
-  return buildMockSession(code)
+  return buildMockSession(buildMockOpenidSeed({ code, clientId, profile }))
 }
 
 module.exports = {

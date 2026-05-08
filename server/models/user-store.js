@@ -40,11 +40,16 @@ const createId = () => {
 }
 
 const normalizeProfile = profile => {
-  const nickName = typeof profile.nickName === 'string' && profile.nickName.trim() ? profile.nickName.trim() : '微信用户'
+  const nickName = typeof profile.nickName === 'string' && profile.nickName.trim()
+    ? profile.nickName.trim()
+    : (typeof profile.nickname === 'string' && profile.nickname.trim() ? profile.nickname.trim() : '微信用户')
+  const avatarUrl = typeof profile.avatarUrl === 'string' && profile.avatarUrl.trim()
+    ? profile.avatarUrl.trim()
+    : (typeof profile.avatar === 'string' && profile.avatar.trim() ? profile.avatar.trim() : '')
 
   return {
     nickName,
-    avatarUrl: typeof profile.avatarUrl === 'string' && profile.avatarUrl.trim() ? profile.avatarUrl.trim() : '',
+    avatarUrl,
     gender: Number(profile.gender) || 0,
     country: profile.country || '',
     province: profile.province || '',
@@ -52,6 +57,16 @@ const normalizeProfile = profile => {
     language: profile.language || 'zh_CN'
   }
 }
+
+const mergeProfile = (existing, incoming) => ({
+  nickName: incoming.nickName && incoming.nickName !== '微信用户' ? incoming.nickName : (existing.nickName || '微信用户'),
+  avatarUrl: incoming.avatarUrl || existing.avatarUrl || '',
+  gender: incoming.gender || existing.gender || 0,
+  country: incoming.country || existing.country || '',
+  province: incoming.province || existing.province || '',
+  city: incoming.city || existing.city || '',
+  language: incoming.language || existing.language || 'zh_CN'
+})
 
 const toPublicUser = user => ({
   id: user.id,
@@ -77,7 +92,7 @@ const findByOpenid = async openid => {
   return users.find(user => user.openid === openid) || null
 }
 
-const upsertByOpenid = async ({ openid, profile, session }) => {
+const upsertByOpenid = async ({ openid, clientId = '', profile, session }) => {
   const users = await readUsers()
   const now = new Date().toISOString()
   const normalizedProfile = normalizeProfile(profile)
@@ -85,9 +100,10 @@ const upsertByOpenid = async ({ openid, profile, session }) => {
 
   if (index >= 0) {
     const existing = users[index]
+    const mergedProfile = mergeProfile(existing, normalizedProfile)
     const updated = {
       ...existing,
-      ...normalizedProfile,
+      ...mergedProfile,
       sessionKey: session.session_key || existing.sessionKey,
       unionid: session.unionid || existing.unionid || '',
       loginCount: (existing.loginCount || 0) + 1,
@@ -104,6 +120,7 @@ const upsertByOpenid = async ({ openid, profile, session }) => {
   const created = {
     id: createId(),
     openid,
+    clientId: clientId || '',
     sessionKey: session.session_key || '',
     unionid: session.unionid || '',
     ...normalizedProfile,
