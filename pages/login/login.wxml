@@ -1,0 +1,36 @@
+<view class="login-page">
+  <view class="login-bg login-bg-left"></view>
+  <view class="login-bg login-bg-right"></view>
+
+  <view class="login-card card-paper">
+    <view class="login-brand">
+      <view class="brand-mark">健</view>
+      <text class="brand-title">健雄书韵</text>
+      <text class="brand-subtitle">微信授权登录</text>
+    </view>
+
+    <view class="profile-preview">
+      <view class="preview-avatar preview-avatar-fallback">
+        <text class="preview-avatar-text">健</text>
+      </view>
+      <text class="preview-name">{{previewProfile.nickName}}</text>
+      <text class="preview-signature">{{previewProfile.signature}}</text>
+    </view>
+
+    <view class="benefit-list">
+      <view class="benefit-item" wx:for="{{benefits}}" wx:key="title">
+        <text class="benefit-title">{{item.title}}</text>
+        <text class="benefit-desc">{{item.desc}}</text>
+      </view>
+    </view>
+
+    <view class="login-actions">
+      <view class="btn-primary login-btn {{loading ? 'loading' : ''}}" bindtap="handleLogin">
+        {{loading ? '登录中...' : '微信一键登录'}}
+      </view>
+      <view class="btn-outline login-back-btn" bindtap="goProfile">返回个人中心</view>
+    </view>
+
+    <text wx:if="{{errorMessage}}" class="login-error">{{errorMessage}}</text>
+  </view>
+</view>

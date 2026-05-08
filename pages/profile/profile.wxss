@@ -11,6 +11,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .profile-avatar {
@@ -23,6 +25,32 @@
   justify-content: center;
   margin-bottom: 20rpx;
   border: 4rpx solid rgba(201, 169, 110, 0.5);
+}
+
+.profile-avatar-placeholder {
+  background: linear-gradient(135deg, #C9A96E, #E8D5B5);
+}
+
+.profile-glow {
+  position: absolute;
+  width: 420rpx;
+  height: 420rpx;
+  border-radius: 50%;
+  background: rgba(201, 169, 110, 0.14);
+  top: -120rpx;
+  right: -160rpx;
+}
+
+.profile-identity {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.guest-state {
+  padding-bottom: 12rpx;
 }
 
 .avatar-text {
@@ -44,6 +72,14 @@
   color: #C9A96E;
 }
 
+.profile-entry-row {
+  margin-top: 28rpx;
+}
+
+.profile-entry-btn {
+  min-width: 280rpx;
+}
+
 /* 数据看板 */
 .stats-board {
   display: flex;
@@ -63,6 +99,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
 }
 
 .stat-number {
@@ -78,9 +115,41 @@
 }
 
 .stat-divider {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   width: 1rpx;
   height: 60rpx;
   background: #E8E2D8;
+}
+
+.profile-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.profile-logout-btn {
+  min-width: 280rpx;
+}
+
+.auth-tip {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 32rpx;
+}
+
+.auth-tip-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #2D2D2D;
+}
+
+.auth-tip-text {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: #8C8C8C;
+  line-height: 1.8;
 }
 
 /* 菜单列表 */
