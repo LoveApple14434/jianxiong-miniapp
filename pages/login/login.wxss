@@ -227,8 +227,10 @@
   width: 100%;
   box-sizing: border-box;
   margin-top: 28rpx;
-  padding: 20rpx 24rpx;
+  padding: 16rpx 24rpx;
+  height: 88rpx;
   font-size: 28rpx;
+  line-height: 56rpx;
   border-radius: 16rpx;
   border: 2rpx solid #E8E2D8;
   background: #FFFFFF;

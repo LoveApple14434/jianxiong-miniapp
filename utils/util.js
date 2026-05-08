@@ -19,7 +19,7 @@ const STORAGE_KEYS = {
   expiresAt: 'login_token_expires_at'
 }
 
-const DEFAULT_API_BASE_URL = 'http://127.0.0.1:3000/api'
+const DEFAULT_API_BASE_URL = 'https://loveapple.icu/api2/api'
 
 const isAbsoluteUrl = url => /^https?:\/\//.test(url)
 
@@ -108,6 +108,17 @@ const validatePassword = password => typeof password === 'string' && password.tr
 
 const validateEmail = email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || '').trim())
 
+const mapNetworkErrorMessage = rawMessage => {
+  const message = String(rawMessage || '')
+  const lowerMessage = message.toLowerCase()
+
+  if (lowerMessage.includes('url not in domain list') || lowerMessage.includes('url not in doamin list')) {
+    return '当前域名未加入小程序 request 合法域名，请到微信公众平台开发设置中添加 loveapple.icu 并重新上传体验版'
+  }
+
+  return message || '网络请求失败'
+}
+
 const request = ({ url, method = 'GET', data = {}, header = {}, auth = true }) => {
   const app = typeof getApp === 'function' ? getApp() : null
   const token = auth ? (app && typeof app.getToken === 'function' ? app.getToken() : wx.getStorageSync(STORAGE_KEYS.token)) : ''
@@ -131,14 +142,17 @@ const request = ({ url, method = 'GET', data = {}, header = {}, auth = true }) =
         }
 
         reject({
-          message: payload.message || '请求失败',
+          message: payload.message || payload.msg || payload.errMsg || '请求失败',
           statusCode: res.statusCode,
           response: res,
           data: payload
         })
       },
       fail(error) {
-        reject(error)
+        reject({
+          ...error,
+          message: mapNetworkErrorMessage(error && (error.message || error.errMsg))
+        })
       }
     })
   })

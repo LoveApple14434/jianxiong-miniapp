@@ -13,6 +13,22 @@ Page({
     ]
   },
 
+  normalizeUserInfo(userInfo) {
+    const source = userInfo || {}
+    const nickName = typeof source.nickName === 'string' && source.nickName.trim()
+      ? source.nickName.trim()
+      : (typeof source.nickname === 'string' && source.nickname.trim() ? source.nickname.trim() : '')
+    const avatarUrl = typeof source.avatarUrl === 'string' && source.avatarUrl.trim()
+      ? source.avatarUrl.trim()
+      : (typeof source.avatar === 'string' && source.avatar.trim() ? source.avatar.trim() : '')
+
+    return {
+      ...source,
+      nickName,
+      avatarUrl
+    }
+  },
+
   buildStatList(userInfo) {
     const stats = userInfo || {}
 
@@ -46,12 +62,12 @@ Page({
     const app = getApp()
     const authState = app.getAuthState ? app.getAuthState() : {}
     const isLogin = Boolean(authState.isLogin && authState.token)
-    const userInfo = authState.userInfo
+    const normalizedUserInfo = authState.userInfo ? this.normalizeUserInfo(authState.userInfo) : null
+    const userInfo = normalizedUserInfo
       ? {
-          ...authState.userInfo,
-          avatarUrl: authState.userInfo.avatarUrl || '',
-          avatarText: authState.userInfo.nickName ? authState.userInfo.nickName.charAt(0) : '健',
-          lastLoginText: this.formatLastLoginText(authState.userInfo.previousLoginAt)
+          ...normalizedUserInfo,
+          avatarText: normalizedUserInfo.nickName ? normalizedUserInfo.nickName.charAt(0) : '健',
+          lastLoginText: this.formatLastLoginText(normalizedUserInfo.previousLoginAt)
         }
       : null
 
