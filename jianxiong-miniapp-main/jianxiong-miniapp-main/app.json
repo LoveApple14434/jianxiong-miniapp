@@ -1,0 +1,35 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/index/index",
+    "pages/timeline/timeline",
+    "pages/reading/reading",
+    "pages/community/community",
+    "pages/profile/profile",
+    "pages/create-post/create-post",
+    "pages/comment/comment"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#5B2D8E",
+    "navigationBarTitleText": "健雄书韵",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F8F5F0",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#8C8C8C",
+    "selectedColor": "#5B2D8E",
+    "backgroundColor": "#FFFFFF",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "发现" },
+      { "pagePath": "pages/timeline/timeline", "text": "足迹" },
+      { "pagePath": "pages/reading/reading", "text": "共读" },
+      { "pagePath": "pages/community/community", "text": "社区" },
+      { "pagePath": "pages/profile/profile", "text": "我的" }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents"
+}

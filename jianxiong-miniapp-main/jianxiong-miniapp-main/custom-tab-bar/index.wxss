@@ -1,0 +1,206 @@
+.tab-bar {
+  display: flex;
+  align-items: center;
+  height: 110rpx;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: #FFFFFF;
+  border-top: 1rpx solid #E8E2D8;
+  position: relative;
+}
+
+.tab-bar-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 10rpx;
+}
+
+/* 图标容器 */
+.tab-icon-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tab-icon {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- CSS 图标绘制 --- */
+
+/* 发现 - 房子 */
+.icon-house {
+  width: 36rpx;
+  height: 32rpx;
+  border: 3rpx solid #8C8C8C;
+  border-top: none;
+  border-radius: 0 0 4rpx 4rpx;
+  position: relative;
+}
+.icon-house::before {
+  content: '';
+  position: absolute;
+  top: -14rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 22rpx solid transparent;
+  border-right: 22rpx solid transparent;
+  border-bottom: 16rpx solid #8C8C8C;
+}
+.icon-active .icon-house {
+  border-color: #5B2D8E;
+}
+.icon-active .icon-house::before {
+  border-bottom-color: #5B2D8E;
+}
+
+/* 足迹 - 时钟 */
+.icon-clock {
+  width: 36rpx;
+  height: 36rpx;
+  border: 3rpx solid #8C8C8C;
+  border-radius: 50%;
+  position: relative;
+}
+.icon-clock::before {
+  content: '';
+  position: absolute;
+  top: 8rpx;
+  left: 50%;
+  width: 3rpx;
+  height: 12rpx;
+  background: #8C8C8C;
+  transform: translateX(-50%);
+}
+.icon-clock::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10rpx;
+  height: 3rpx;
+  background: #8C8C8C;
+  transform-origin: left center;
+}
+.icon-active .icon-clock {
+  border-color: #5B2D8E;
+}
+.icon-active .icon-clock::before,
+.icon-active .icon-clock::after {
+  background: #5B2D8E;
+}
+
+/* 共读 - 书本 */
+.icon-book {
+  width: 36rpx;
+  height: 30rpx;
+  border: 3rpx solid #8C8C8C;
+  border-radius: 2rpx;
+  position: relative;
+}
+.icon-book::before {
+  content: '';
+  position: absolute;
+  top: 2rpx;
+  left: 50%;
+  width: 3rpx;
+  height: calc(100% - 4rpx);
+  background: #8C8C8C;
+  transform: translateX(-50%);
+}
+.icon-active .icon-book {
+  border-color: #5B2D8E;
+}
+.icon-active .icon-book::before {
+  background: #5B2D8E;
+}
+
+/* 社区 - 聊天气泡 */
+.icon-chat {
+  width: 36rpx;
+  height: 28rpx;
+  border: 3rpx solid #8C8C8C;
+  border-radius: 6rpx;
+  position: relative;
+}
+.icon-chat::after {
+  content: '';
+  position: absolute;
+  bottom: -10rpx;
+  left: 8rpx;
+  width: 0;
+  height: 0;
+  border-left: 8rpx solid transparent;
+  border-right: 8rpx solid transparent;
+  border-top: 10rpx solid #8C8C8C;
+}
+.icon-active .icon-chat {
+  border-color: #5B2D8E;
+}
+.icon-active .icon-chat::after {
+  border-top-color: #5B2D8E;
+}
+
+/* 我的 - 人物 */
+.icon-user {
+  position: relative;
+  width: 36rpx;
+  height: 36rpx;
+}
+.icon-user::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16rpx;
+  height: 16rpx;
+  border: 3rpx solid #8C8C8C;
+  border-radius: 50%;
+}
+.icon-user::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28rpx;
+  height: 14rpx;
+  border: 3rpx solid #8C8C8C;
+  border-top: none;
+  border-radius: 0 0 14rpx 14rpx;
+}
+.icon-active .icon-user::before,
+.icon-active .icon-user::after {
+  border-color: #5B2D8E;
+}
+
+/* 选中指示金色小点 */
+.tab-dot {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: #C9A96E;
+  margin-top: 4rpx;
+}
+
+/* 文字 */
+.tab-text {
+  font-size: 20rpx;
+  color: #8C8C8C;
+  margin-top: 4rpx;
+}
+
+.tab-text-active {
+  color: #5B2D8E;
+  font-weight: 600;
+}

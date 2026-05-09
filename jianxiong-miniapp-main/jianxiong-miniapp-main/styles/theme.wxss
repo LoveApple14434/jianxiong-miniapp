@@ -1,0 +1,215 @@
+/* ========================================
+   健雄书韵 - 全局主题样式
+   南京大学紫金色调设计体系
+   ======================================== */
+
+/* --- 页面基础 --- */
+page {
+  --color-primary: #5B2D8E;
+  --color-primary-light: #7B4EAE;
+  --color-primary-dark: #3D1B62;
+  --color-accent: #C9A96E;
+  --color-accent-light: #E8D5B5;
+  --color-bg: #F8F5F0;
+  --color-dark-bg: #1A0F2E;
+  --color-text: #2D2D2D;
+  --color-text-sub: #8C8C8C;
+  --color-text-light: #B0B0B0;
+  --color-white: #FFFFFF;
+  --color-border: #E8E2D8;
+  --color-card: #FFFFFF;
+
+  --radius-sm: 8rpx;
+  --radius-md: 16rpx;
+  --radius-lg: 24rpx;
+  --radius-xl: 32rpx;
+
+  --shadow-card: 0 4rpx 20rpx rgba(91, 45, 142, 0.08);
+  --shadow-float: 0 8rpx 32rpx rgba(91, 45, 142, 0.15);
+
+  --spacing-xs: 12rpx;
+  --spacing-sm: 20rpx;
+  --spacing-md: 32rpx;
+  --spacing-lg: 48rpx;
+  --spacing-xl: 64rpx;
+
+  font-family: -apple-system, BlinkMacSystemFont, 'Noto Serif SC', 'Source Han Serif CN', serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+/* --- 通用容器 --- */
+.container {
+  padding: var(--spacing-md);
+}
+
+.container-full {
+  padding: 0;
+}
+
+/* --- 卡片 --- */
+.card {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.card-dark {
+  background: var(--color-dark-bg);
+  color: var(--color-white);
+}
+
+.card-paper {
+  background: linear-gradient(135deg, #FBF8F3 0%, #F5EFE6 100%);
+  border: 1rpx solid var(--color-border);
+}
+
+/* --- 文字 --- */
+.text-primary { color: var(--color-primary); }
+.text-accent { color: var(--color-accent); }
+.text-sub { color: var(--color-text-sub); }
+.text-white { color: var(--color-white); }
+
+.text-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.text-subtitle {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.text-body {
+  font-size: 28rpx;
+  color: var(--color-text);
+  line-height: 1.8;
+}
+
+.text-caption {
+  font-size: 24rpx;
+  color: var(--color-text-sub);
+}
+
+.text-quote {
+  font-family: 'Noto Serif SC', 'Source Han Serif CN', 'STSong', serif;
+  font-style: italic;
+  font-size: 30rpx;
+  color: var(--color-primary);
+  line-height: 2;
+}
+
+/* --- 按钮 --- */
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  color: var(--color-white);
+  border-radius: var(--radius-xl);
+  padding: 20rpx 48rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+}
+
+.btn-primary::after { border: none; }
+
+.btn-accent {
+  background: linear-gradient(135deg, var(--color-accent) 0%, #D4B87A 100%);
+  color: var(--color-white);
+  border-radius: var(--radius-xl);
+  padding: 20rpx 48rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+}
+
+.btn-accent::after { border: none; }
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-primary);
+  border: 2rpx solid var(--color-primary);
+  border-radius: var(--radius-xl);
+  padding: 18rpx 48rpx;
+  font-size: 28rpx;
+  text-align: center;
+}
+
+.btn-outline::after { border: none; }
+
+/* --- 印章标签 --- */
+.tag-stamp {
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-primary);
+  color: var(--color-accent);
+  font-size: 22rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 4rpx;
+  border: 2rpx solid var(--color-accent);
+  font-weight: 600;
+  letter-spacing: 2rpx;
+}
+
+/* --- 云纹分隔线 --- */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: var(--spacing-md) 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1rpx;
+  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+}
+
+.divider-text {
+  padding: 0 var(--spacing-sm);
+  font-size: 26rpx;
+  color: var(--color-accent);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* --- 浮动操作按钮 --- */
+.fab {
+  position: fixed;
+  right: 40rpx;
+  bottom: 200rpx;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-float);
+  z-index: 100;
+}
+
+/* --- 徽章 --- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36rpx;
+  height: 36rpx;
+  padding: 0 10rpx;
+  border-radius: 18rpx;
+  background: var(--color-accent);
+  color: var(--color-white);
+  font-size: 20rpx;
+  font-weight: 600;
+}

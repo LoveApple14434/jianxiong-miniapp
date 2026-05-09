@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1,
+    "avatar": "张",
+    "name": "张三",
+    "time": "2小时前",
+    "topicId": 1,
+    "tag": "读后感",
+    "content": "今天读完第三章",
+    "images": [],
+    "likes": 0,
+    "comments": 0,
+    "createdAt": "2026-01-01T08:00:00.000Z"
+  },
+  {
+    "id": 5,
+    "avatar": "赵",
+    "name": "赵六",
+    "time": "6小时前",
+    "topicId": 1,
+    "tag": "读后感",
+    "content": "第五章关于宇称不守恒",
+    "images": [],
+    "likes": 0,
+    "comments": 0,
+    "createdAt": "2026-01-01T06:00:00.000Z"
+  }
+]

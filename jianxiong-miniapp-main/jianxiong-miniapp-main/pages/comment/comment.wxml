@@ -1,0 +1,39 @@
+<view class="page-comment">
+  <!-- 帖子主体 -->
+  <view class="post-card">
+    <view class="post-header">
+      <view class="avatar">{{post.avatar}}</view>
+      <view class="user">
+        <text class="name">{{post.name}}</text>
+        <text class="time">{{post.time}}</text>
+      </view>
+      <view class="tag">{{post.tag}}</view>
+    </view>
+    <view class="content">{{post.content}}</view>
+  </view>
+
+  <!-- 评论列表 -->
+  <view class="comment-list">
+    <view class="title">全部评论（{{comments.length}}）</view>
+    <view wx:if="{{comments.length===0}}" class="empty">暂无评论</view>
+
+    <view class="comment-item" wx:for="{{comments}}" wx:key="id">
+      <view class="c-avatar">{{item.avatar}}</view>
+      <view class="c-body">
+       <view class="c-name-line">
+         <text class="c-name">{{item.name}}</text>
+         <!-- 自己的评论显示删除 -->
+          <text class="del-comment" wx:if="{{item.name === '我'}}" bindtap="delComment" data-cid="{{item.id}}">删除</text>
+       </view>
+       <view class="c-content">{{item.content}}</view>
+        <view class="c-time">{{item.time}}</view>
+     </view>
+    </view>
+  </view>
+
+  <!-- 评论输入框 -->
+  <view class="reply-bar">
+    <input class="input" placeholder="写评论..." bindinput="onInput" value="{{replyText}}"/>
+    <button class="btn" bindtap="submit">发送</button>
+  </view>
+</view>
