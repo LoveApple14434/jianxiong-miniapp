@@ -7,7 +7,6 @@ const STORAGE_KEYS = {
   clientId: 'login_client_id'
 }
 
-const DEV_API_BASE_URL = 'http://127.0.0.1:3000/api'
 const PROD_API_BASE_URL = 'https://loveapple.icu/api2/api'
 
 const getMiniProgramEnvVersion = () => {
@@ -22,13 +21,7 @@ const getMiniProgramEnvVersion = () => {
 }
 
 // 强制将 API 指向线上地址，避免任何环境回退到本地
-const resolveApiBaseUrl = () => {
-  const envVersion = getMiniProgramEnvVersion()
-  if (envVersion === 'develop' || envVersion === 'trial') {
-    return DEV_API_BASE_URL
-  }
-  return PROD_API_BASE_URL
-}
+const resolveApiBaseUrl = () => PROD_API_BASE_URL
 
 const normalizeUserInfo = userInfo => {
   const source = userInfo || {}
