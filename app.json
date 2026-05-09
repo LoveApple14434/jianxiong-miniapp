@@ -5,6 +5,8 @@
     "pages/timeline/timeline",
     "pages/reading/reading",
     "pages/community/community",
+    "pages/create-post/create-post",
+    "pages/comment/comment",
     "pages/profile/profile",
     "pages/writenote/writenote"
   ],
