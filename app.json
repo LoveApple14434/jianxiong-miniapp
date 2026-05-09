@@ -8,7 +8,8 @@
     "pages/profile/profile",
     "pages/writenote/writenote",
     "pages/mynotes/mynotes",
-    "pages/favorites/favorites"
+    "pages/favorites/favorites",
+    "pages/publish/publish"
   ],
   "window": {
     "navigationBarBackgroundColor": "#5B2D8E",

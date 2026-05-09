@@ -1,68 +1,88 @@
-<!-- 社区 / 交流广场 -->
+<!-- pages/community/community.wxml -->
 <view class="page-community">
 
-  <!-- 话题标签 -->
-  <scroll-view class="topic-nav" scroll-x enhanced show-scrollbar="{{false}}">
-    <view class="topic-nav-inner">
-      <view
-        wx:for="{{topics}}"
-        wx:key="id"
-        class="topic-tag {{currentTopic === item.id ? 'topic-tag-active' : ''}}"
-        bindtap="switchTopic"
-        data-id="{{item.id}}"
-      >
-        #{{item.name}}
-      </view>
+<!-- 话题标签 -->
+<scroll-view class="topic-nav" scroll-x enhanced show-scrollbar="{{false}}">
+  <view class="topic-nav-inner">
+    <view
+      wx:for="{{topics}}"
+      wx:key="id"
+      class="topic-tag {{currentTopic === item.id ? 'topic-tag-active' : ''}}"
+      bindtap="switchTopic"
+      data-id="{{item.id}}"
+    >
+      #{{item.name}}
     </view>
-  </scroll-view>
-
-  <!-- 帖子列表 -->
-  <scroll-view class="post-scroll" scroll-y scroll-into-view="post-top">
-    <view class="container" id="post-top">
-
-      <!-- 分区为空时的提示 -->
-      <view class="empty-state" wx:if="{{filteredPosts.length === 0}}">
-        <text class="empty-icon">📝</text>
-        <text class="empty-text">这个分区还没有帖子，来发第一条吧</text>
-      </view>
-
-      <view class="post-item card" wx:for="{{filteredPosts}}" wx:key="id">
-        <!-- 用户信息 -->
-        <view class="post-header">
-          <view class="post-avatar">{{item.avatar}}</view>
-          <view class="post-user-info">
-            <text class="text-subtitle">{{item.name}}</text>
-            <text class="text-caption">{{item.time}}</text>
-          </view>
-          <view class="tag-stamp">{{item.tag}}</view>
-        </view>
-        <!-- 内容 -->
-        <text class="post-content text-body">{{item.content}}</text>
-        <!-- 图片 -->
-        <view class="post-images" wx:if="{{item.images && item.images.length > 0}}">
-          <view class="post-image-placeholder" wx:for="{{item.images}}" wx:for-item="img" wx:key="*this">
-            <text class="text-caption">图片</text>
-          </view>
-        </view>
-        <!-- 互动栏 -->
-        <view class="post-actions">
-          <view class="post-action">
-            <text>❤ {{item.likes}}</text>
-          </view>
-          <view class="post-action">
-            <text>💬 {{item.comments}}</text>
-          </view>
-          <view class="post-action">
-            <text>🔗 分享</text>
-          </view>
-        </view>
-      </view>
-    </view>
-  </scroll-view>
-
-  <!-- 发帖按钮 -->
-  <view class="fab" bindtap="createPost">
-    <text style="font-size: 40rpx;">✍</text>
   </view>
+</scroll-view>
 
+<!-- 帖子列表 -->
+<scroll-view class="post-scroll" scroll-y>
+  <view class="container">
+
+    <view class="empty-state" wx:if="{{filteredPosts.length === 0}}">
+      <text class="empty-icon">📝</text>
+      <text class="empty-text">这个分区还没有帖子，来发第一条吧</text>
+    </view>
+
+    <view class="post-item" wx:for="{{filteredPosts}}" wx:key="id">
+      <!-- 用户信息 -->
+      <view class="post-header">
+        <view class="post-avatar">{{item.avatar}}</view>
+        <view class="post-user-info">
+          <text class="text-subtitle">{{item.name}}</text>
+          <text class="text-caption">{{item.time}}</text>
+        </view>
+        <view class="tag-stamp">{{item.tag}}</view>
+      </view>
+
+      <!-- 内容 -->
+      <text class="post-content">{{item.content}}</text>
+
+      <!-- 图片占位 -->
+      <view class="post-images" wx:if="{{item.images && item.images.length > 0}}">
+        <view class="post-image-placeholder" wx:for="{{item.images}}" wx:key="*this">图片</view>
+      </view>
+
+      <!-- 互动栏 -->
+      <view class="post-actions">
+        <view class="post-action" bindtap="toggleLike" data-id="{{item.id}}">
+          <text>{{item.isLiked ? '❤️' : '🤍'}} {{item.likes}}</text>
+        </view>
+        <view class="post-action" bindtap="showCommentInput" data-id="{{item.id}}">
+          <text>💬 {{item.commentsList ? item.commentsList.length : 0}}</text>
+        </view>
+        <view class="post-action">
+          <text>🔗 分享</text>
+        </view>
+      </view>
+
+      <!-- 评论列表 -->
+      <view class="comments-section" wx:if="{{item.commentsList && item.commentsList.length > 0}}">
+        <view wx:for="{{item.commentsList}}" wx:key="id" class="comment-item">
+          <view class="comment-header">
+            <text class="comment-avatar">{{item.avatar}}</text>
+            <text class="comment-name">{{item.name}}</text>
+            <text class="comment-time">{{item.time}}</text>
+          </view>
+          <view class="comment-content">{{item.content}}</view>
+        </view>
+      </view>
+
+      <!-- 评论输入框 -->
+      <view class="comment-input-area" wx:if="{{commentInputVisible === item.id}}">
+        <textarea class="comment-textarea" placeholder="写下你的评论..." value="{{commentContent}}" bindinput="onCommentInput" auto-focus></textarea>
+        <view class="comment-actions">
+          <button class="cancel-btn" size="mini" bindtap="hideCommentInput">取消</button>
+          <button class="submit-btn" size="mini" type="primary" bindtap="submitComment" data-id="{{item.id}}">发布</button>
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view>
+
+<!-- 发帖按钮 -->
+<view class="fab" bindtap="createPost">
+  <text>✍️</text>
+</view>
 </view>
