@@ -16,7 +16,7 @@
         >
           {{item.title}}
         </view>
-        <text class="chapter-fav-btn" bindtap="addFavorite" data-id="{{item.id}}" data-chapter="{{item}}">❤</text>
+        <text class="chapter-fav-btn {{favoritedChapterIds.includes(item.id) ? 'fav-active' : ''}}" bindtap="addFavorite" data-id="{{item.id}}" data-chapter="{{item}}">❤</text>
       </view>
     </view>
   </scroll-view>

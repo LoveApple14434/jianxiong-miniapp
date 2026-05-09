@@ -17,7 +17,8 @@ Page({
       { id: 2, avatar: '李', name: '李同学', time: '今天 10:15', content: '作为理科生，感觉实验的严谨性和美感在先生身上得到了完美体现。', likes: 8, isLiked: false },
       { id: 3, avatar: '王', name: '王同学', time: '昨天 22:40', content: '先生的家国情怀令人敬佩，学术无国界，但学者有祖国。', likes: 24, isLiked: false }
     ],
-    totalLikes: 0
+    totalLikes: 0,
+    favoritedChapterIds: []
   },
 
   onLoad() {
@@ -38,7 +39,11 @@ Page({
 
     const totalLikes = Object.keys(savedLikes).length
 
-    this.setData({ notes, totalLikes })
+    // 加载收藏状态
+    const savedFavorites = wx.getStorageSync('myFavorites') || []
+    const favoritedChapterIds = savedFavorites.map(f => f.id)
+
+    this.setData({ notes, totalLikes, favoritedChapterIds })
   },
 
   switchChapter(e) {
@@ -80,16 +85,22 @@ Page({
 
     const favorites = wx.getStorageSync('myFavorites') || []
     const existingIndex = favorites.findIndex(f => f.id === chapterId)
+    let favoritedChapterIds = this.data.favoritedChapterIds || []
     
     if (existingIndex >= 0) {
       favorites.splice(existingIndex, 1)
+      favoritedChapterIds = favoritedChapterIds.filter(id => id !== chapterId)
       wx.showToast({ title: '已取消收藏', icon: 'none' })
     } else {
       favorites.unshift(newFavorite)
+      if (!favoritedChapterIds.includes(chapterId)) {
+        favoritedChapterIds.push(chapterId)
+      }
       wx.showToast({ title: '已收藏', icon: 'success' })
     }
 
     wx.setStorageSync('myFavorites', favorites)
+    this.setData({ favoritedChapterIds })
 
     if (isUserLogin()) {
       const { profileAPI } = require('../../services/api')

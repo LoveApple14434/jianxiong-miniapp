@@ -44,12 +44,18 @@
 .chapter-fav-btn {
   font-size: 28rpx;
   opacity: 0.5;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, color 0.2s;
   padding: 8rpx;
+  color: #8C8C8C;
 }
 
 .chapter-fav-btn:active {
   opacity: 1;
+}
+
+.chapter-fav-btn.fav-active {
+  opacity: 1;
+  color: #e64340;
 }
 
 /* 阅读区 */
