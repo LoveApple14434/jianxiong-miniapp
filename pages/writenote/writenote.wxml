@@ -1,0 +1,24 @@
+<!-- pages/writenote/writenote.wxml -->
+<view class="container">
+  <!-- 文本编辑框（占满中间核心区域） -->
+  <view class="editor-wrapper">
+    <textarea 
+      class="note-editor" 
+      placeholder="分享你的阅读感悟..." 
+      value="{{content}}"
+      bindinput="onInput"
+      maxlength="500"
+      auto-focus
+    ></textarea>
+    <view class="word-count">{{content.length}}/500</view>
+  </view>
+
+  <!-- 底部固定区域（章节提示+发布按钮） -->
+  <view class="bottom-bar">
+    <view class="chapter-hint">
+      <text class="hint-icon">📖</text>
+      <text class="hint-text">正在为「{{chapterTitle}}」写笔记</text>
+    </view>
+    <view class="nav-publish {{content.trim() ? 'active' : ''}}" bindtap="publishNote">发布</view>
+  </view>
+</view>

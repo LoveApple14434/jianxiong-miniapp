@@ -1,0 +1,63 @@
+<!-- 首页 / 发现 -->
+<view class="page-index">
+
+  <!-- Hero 轮播区 -->
+  <swiper class="hero-swiper" indicator-dots autoplay circular interval="4000">
+    <swiper-item wx:for="{{heroList}}" wx:key="id">
+      <view class="hero-item" style="background-image: linear-gradient(to bottom, rgba(26,15,46,0.3), rgba(26,15,46,0.85));">
+        <view class="hero-content">
+          <text class="hero-quote">{{item.quote}}</text>
+          <text class="hero-author">—— 吴健雄</text>
+        </view>
+      </view>
+    </swiper-item>
+  </swiper>
+
+  <view class="container">
+
+    <!-- 精选书摘 -->
+    <section-header title="精选书摘" />
+    <scroll-view class="book-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="book-scroll-inner">
+        <view class="book-card card-paper" wx:for="{{bookExcerpts}}" wx:key="id">
+          <text class="book-card-chapter">{{item.chapter}}</text>
+          <text class="book-card-text">{{item.text}}</text>
+          <view class="book-card-meta">
+            <text class="text-caption">{{item.notes}} 条笔记</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 大先生足迹（预览） -->
+    <section-header title="大先生足迹" />
+    <view class="timeline-preview card" bindtap="goTimeline">
+      <view class="timeline-bar">
+        <view class="timeline-dot" wx:for="{{timelinePreview}}" wx:key="year">
+          <text class="timeline-year">{{item.year}}</text>
+          <view class="dot {{index === 0 ? 'dot-first' : ''}}"></view>
+          <text class="timeline-label">{{item.label}}</text>
+        </view>
+      </view>
+      <view class="timeline-link">
+        <text class="text-primary">查看完整足迹</text>
+        <text class="text-primary"> →</text>
+      </view>
+    </view>
+
+    <!-- 今日共读 -->
+    <section-header title="今日共读" />
+    <view class="today-reading card" bindtap="goReading">
+      <view class="today-reading-header">
+        <text class="text-subtitle">{{todayReading.chapter}}</text>
+        <view class="tag-stamp">进行中</view>
+      </view>
+      <text class="text-body today-reading-desc">{{todayReading.desc}}</text>
+      <view class="today-reading-footer">
+        <text class="text-caption">已有 {{todayReading.participants}} 人参与</text>
+        <view class="btn-primary btn-sm">加入共读</view>
+      </view>
+    </view>
+
+  </view>
+</view>

@@ -1,0 +1,62 @@
+<!-- 共读 / 书摘精读 -->
+<view class="page-reading">
+
+  <!-- 章节选择器 -->
+  <scroll-view class="chapter-nav" scroll-x enhanced show-scrollbar="{{false}}">
+    <view class="chapter-nav-inner">
+      <view
+        wx:for="{{chapters}}"
+        wx:key="id"
+        class="chapter-tab {{currentChapter === item.id ? 'chapter-tab-active' : ''}}"
+        bindtap="switchChapter"
+        data-id="{{item.id}}"
+      >
+        {{item.title}}
+      </view>
+    </view>
+  </scroll-view>
+
+  <scroll-view class="reading-scroll" scroll-y>
+    <view class="container">
+
+      <!-- 书摘展示 -->
+      <view class="excerpt-card card-paper">
+        <text class="excerpt-chapter text-accent">{{activeChapter.title}}</text>
+        <view class="divider">
+          <text class="divider-text">摘</text>
+        </view>
+        <text class="excerpt-text text-quote">{{activeChapter.excerpt}}</text>
+        <view class="excerpt-meta">
+          <text class="text-caption">{{activeChapter.notes}} 条笔记</text>
+          <text class="text-caption">{{activeChapter.likes}} 人点赞</text>
+        </view>
+      </view>
+
+      <!-- 精选笔记 -->
+      <section-header title="精选笔记" />
+      <view class="note-list">
+        <view class="note-item card" wx:for="{{notes}}" wx:key="id">
+          <view class="note-header">
+            <view class="note-avatar">{{item.avatar}}</view>
+            <view class="note-info">
+              <text class="text-subtitle">{{item.name}}</text>
+              <text class="text-caption">{{item.time}}</text>
+            </view>
+          </view>
+          <text class="note-content text-body">{{item.content}}</text>
+          <view class="note-footer" bindtap="toggleLike" data-id="{{item.id}}">
+            <text class="like-icon {{item.isLiked ? 'liked' : ''}}">❤</text>
+            <text class="text-caption like-count">{{item.likes}}</text>
+          </view>
+        </view>
+      </view>
+
+    </view>
+  </scroll-view>
+
+  <!-- 写感悟按钮 -->
+  <view class="fab" bindtap="writeNote">
+    <text style="font-size: 40rpx;">✏</text>
+  </view>
+
+</view>

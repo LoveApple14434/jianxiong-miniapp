@@ -1,0 +1,30 @@
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 40rpx 0 24rpx;
+}
+
+.section-left {
+  display: flex;
+  align-items: center;
+}
+
+.section-bar {
+  width: 8rpx;
+  height: 36rpx;
+  border-radius: 4rpx;
+  background: linear-gradient(to bottom, #5B2D8E, #C9A96E);
+  margin-right: 16rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #2D2D2D;
+}
+
+.section-more-text {
+  font-size: 24rpx;
+  color: #8C8C8C;
+}
