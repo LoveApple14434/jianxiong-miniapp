@@ -1,3 +1,6 @@
+const app = getApp()
+const { postAPI } = require('../../services/api.js')
+
 Page({
   data: {
     post: {},
@@ -9,18 +12,32 @@ Page({
   onLoad(options) {
     const postId = parseInt(options.id)
     this.setData({ postId })
+    this.loadPost(postId)
+  },
 
-    // 从本地缓存找到这条帖子
+  loadPost(postId) {
+    wx.showLoading({ title: '加载中', mask: true })
+    postAPI.get(postId)
+      .then(post => {
+        post.commentsList = Array.isArray(post.commentsList) ? post.commentsList : []
+        this.setData({ post, comments: post.commentsList })
+      })
+      .catch(() => {
+        this.loadPostFromLocal(postId)
+      })
+      .finally(() => {
+        wx.hideLoading()
+      })
+  },
+
+  loadPostFromLocal(postId) {
     wx.getStorage({
       key: 'allPosts',
       success: res => {
-        const all = res.data
-        const post = all.find(p => p.id === postId)
-        if (!post.commentsList) post.commentsList = []
-        this.setData({
-          post,
-          comments: post.commentsList
-        })
+        const all = res.data || []
+        const post = all.find(p => p.id === postId) || {}
+        post.commentsList = Array.isArray(post.commentsList) ? post.commentsList : []
+        this.setData({ post, comments: post.commentsList })
       }
     })
   },
@@ -32,33 +49,29 @@ Page({
   // 删除自己评论
   delComment(e) {
     const cid = parseInt(e.currentTarget.dataset.cid)
+    const postId = this.data.postId
+
     wx.showModal({
       title: '提示',
       content: '确定删除这条评论？',
       success: res => {
         if (res.confirm) {
-          let { comments, post } = this.data
-          // 过滤掉这条评论
-          comments = comments.filter(c => c.id !== cid)
-          // 更新帖子评论数和评论列表
-          post.commentsList = comments
-          post.comments = comments.length
-
-          // 同步到本地缓存
-          wx.getStorage({
-            key: 'allPosts',
-            success: res => {
-              let all = res.data
-              const idx = all.findIndex(p => p.id === post.id)
-              if (idx > -1) {
-                all[idx] = post
-                wx.setStorageSync('allPosts', all)
-              }
-            }
-          })
-
-          this.setData({ comments, post })
-          wx.showToast({ title: '已删除' })
+          wx.showLoading({ title: '删除中', mask: true })
+          postAPI.deleteComment(postId, cid)
+            .then(() => {
+              let { comments, post } = this.data
+              comments = comments.filter(c => c.id !== cid)
+              post.commentsList = comments
+              post.comments = comments.length
+              this.setData({ comments, post })
+              wx.showToast({ title: '已删除' })
+            })
+            .catch(error => {
+              wx.showToast({ title: error.message || '删除失败', icon: 'none' })
+            })
+            .finally(() => {
+              wx.hideLoading()
+            })
         }
       }
     })
@@ -66,41 +79,37 @@ Page({
 
   submit() {
     const content = this.data.replyText.trim()
+    const postId = this.data.postId
+
     if (!content) return
 
-    const newComment = {
-      id: Date.now(),
-      avatar: '我',
-      name: '我',
-      time: '刚刚',
-      content
-    }
-
-    // 1. 本地更新评论列表
-    let { post, comments } = this.data
-    comments.unshift(newComment)
-    post.commentsList = comments
-    post.comments = comments.length
-
-    // 2. 写回缓存
-    wx.getStorage({
-      key: 'allPosts',
-      success: res => {
-        let all = res.data
-        const idx = all.findIndex(p => p.id === post.id)
-        if (idx > -1) {
-          all[idx] = post
-          wx.setStorageSync('allPosts', all)
+    wx.showLoading({ title: '提交中', mask: true })
+    postAPI.addComment(postId, { content })
+      .then(comment => {
+        let { post, comments } = this.data
+        const newComment = {
+          id: comment.id,
+          avatar: comment.avatar,
+          name: comment.name,
+          time: comment.time,
+          content: comment.content
         }
-      }
-    })
+        comments.unshift(newComment)
+        post.commentsList = comments
+        post.comments = comments.length
 
-    this.setData({
-      post,
-      comments,
-      replyText: ''
-    })
-
-    wx.showToast({ title: '评论成功' })
+        this.setData({
+          post,
+          comments,
+          replyText: ''
+        })
+        wx.showToast({ title: '评论成功' })
+      })
+      .catch(error => {
+        wx.showToast({ title: error.message || '评论失败', icon: 'none' })
+      })
+      .finally(() => {
+        wx.hideLoading()
+      })
   }
 })

@@ -1,4 +1,5 @@
 const app = getApp();
+const { postAPI } = require('../../services/api.js')
 
 Page({
   data: {
@@ -29,9 +30,7 @@ Page({
     }
   },
 
-  // =====================
-  // 已修改：和你 app.js 完全一致的写法
-  // =====================
+
   getMyInfo() {
     let nickName = "健雄学子";
     let avatarUrl = "";
@@ -57,9 +56,27 @@ Page({
   },
 
   loadPosts() {
+    wx.showLoading({ title: '加载中', mask: true })
+    postAPI.list()
+      .then(posts => {
+        const allPosts = Array.isArray(posts) ? posts : []
+        this.setData({ allPosts })
+        wx.setStorageSync('allPosts', allPosts)
+        this.filterPosts(this.data.currentTopic)
+      })
+      .catch(error => {
+        wx.showToast({ title: error.message || '加载帖子失败', icon: 'none' })
+        this.loadLocalPosts()
+      })
+      .finally(() => {
+        wx.hideLoading()
+      })
+  },
+
+  loadLocalPosts() {
     const defaultPosts = [
-      { id: 1, avatar: '张', name: '张三', time: '2小时前', topicId: 1, tag: '读后感', content: '今天读完第三章', images: [], likes:0, comments:0 },
-      { id: 5, avatar: '赵', name: '赵六', time: '6小时前', topicId:1, tag:'读后感', content:'第五章关于宇称不守恒', images:[], likes:0, comments:0 },
+      { id: 1, avatar: '张', name: '张三', time: '2小时前', topicId: 1, tag: '读后感', content: '今天读完第三章', images: [], likes: 0, comments: 0 },
+      { id: 5, avatar: '赵', name: '赵六', time: '6小时前', topicId: 1, tag: '读后感', content: '第五章关于宇称不守恒', images: [], likes: 0, comments: 0 }
     ]
 
     wx.getStorage({
@@ -79,23 +96,34 @@ Page({
   doLike(e) {
     const postId = parseInt(e.currentTarget.dataset.id)
     let allPosts = this.data.allPosts
+    let targetPost = allPosts.find(post => post.id === postId)
 
-    allPosts = allPosts.map(post => {
-      if (post.id === postId) {
-        if (!post.isLiked) {
-          post.likes += 1
-          post.isLiked = true
-        } else {
-          post.likes -= 1
-          post.isLiked = false
-        }
-      }
-      return post
-    })
+    if (!targetPost) {
+      return
+    }
 
-    this.setData({ allPosts })
-    wx.setStorageSync('allPosts', allPosts)
-    this.filterPosts(this.data.currentTopic)
+    const delta = targetPost.isLiked ? -1 : 1
+    wx.showLoading({ title: '更新中', mask: true })
+    postAPI.like(postId, delta)
+      .then(response => {
+        allPosts = allPosts.map(post => {
+          if (post.id === postId) {
+            post.likes = typeof response.likes === 'number' ? response.likes : Math.max(0, (post.likes || 0) + delta)
+            post.isLiked = !post.isLiked
+          }
+          return post
+        })
+
+        this.setData({ allPosts })
+        wx.setStorageSync('allPosts', allPosts)
+        this.filterPosts(this.data.currentTopic)
+      })
+      .catch(error => {
+        wx.showToast({ title: error.message || '操作失败', icon: 'none' })
+      })
+      .finally(() => {
+        wx.hideLoading()
+      })
   },
 
   switchTopic(e) {
@@ -129,11 +157,21 @@ Page({
       content: '确定要删除这条帖子吗？',
       success: res => {
         if (res.confirm) {
-          let allPosts = this.data.allPosts.filter(p => p.id !== postId)
-          this.setData({ allPosts })
-          wx.setStorageSync('allPosts', allPosts)
-          this.filterPosts(this.data.currentTopic)
-          wx.showToast({ title: '已删除' })
+          wx.showLoading({ title: '删除中', mask: true })
+          postAPI.delete(postId)
+            .then(() => {
+              let allPosts = this.data.allPosts.filter(p => p.id !== postId)
+              this.setData({ allPosts })
+              wx.setStorageSync('allPosts', allPosts)
+              this.filterPosts(this.data.currentTopic)
+              wx.showToast({ title: '已删除' })
+            })
+            .catch(error => {
+              wx.showToast({ title: error.message || '删除失败', icon: 'none' })
+            })
+            .finally(() => {
+              wx.hideLoading()
+            })
         }
       }
     })

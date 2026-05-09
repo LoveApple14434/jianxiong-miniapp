@@ -1,4 +1,5 @@
 const app = getApp();
+const { postAPI } = require('../../services/api.js')
 
 Page({
   data: {
@@ -68,28 +69,27 @@ Page({
     const finalAvatar = avatarUrl ? avatarUrl : nickName.charAt(0);
 
 
-    const newPost = {
-      id: Date.now(),
-      avatar: finalAvatar,
-      name: nickName,
-      time: '刚刚',
+    const tag = this.data.topicList.find(t => t.id === selectedTopic)?.name || ''
+    const payload = {
+      content: content.trim(),
       topicId: selectedTopic,
-      tag: this.data.topicList.find(t => t.id === selectedTopic).name,
-      content: content,
-      images: images,
-      likes: 0,
-      comments: 0
-    };
-
-    try {
-      let posts = wx.getStorageSync('allPosts') || [];
-      posts.unshift(newPost);
-      wx.setStorageSync('allPosts', posts);
-    } catch (e) {
-      wx.setStorageSync('allPosts', [newPost]);
+      tag,
+      images,
+      authorName: nickName,
+      authorAvatar: finalAvatar
     }
 
-    this.successBack();
+    wx.showLoading({ title: '发布中', mask: true })
+    postAPI.create(payload)
+      .then(() => {
+        this.successBack()
+      })
+      .catch(error => {
+        wx.showToast({ title: error.message || '发布失败', icon: 'none' })
+      })
+      .finally(() => {
+        wx.hideLoading()
+      })
   },
 
   successBack() {

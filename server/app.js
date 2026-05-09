@@ -5,7 +5,7 @@ const path = require('path')
 const config = require('./config')
 const authRoutes = require('./routes/auth')
 const uploadRoutes = require('./routes/upload')
-const profileRoutes = require('./routes/profile')
+const postRoutes = require('./routes/posts')
 
 const app = express()
 
@@ -22,7 +22,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/auth', authRoutes)
 app.use('/api/upload', uploadRoutes)
-app.use('/api/profile', profileRoutes)
+app.use('/api/posts', postRoutes)
 
 app.use((req, res) => {
   res.status(404).json({ code: 404, message: '接口不存在' })

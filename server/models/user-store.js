@@ -124,16 +124,10 @@ const upsertByOpenid = async ({ openid, clientId = '', profile, session }) => {
     sessionKey: session.session_key || '',
     unionid: session.unionid || '',
     ...normalizedProfile,
-    readChapters: 0,
-    noteCount: 0,
-    likeCount: 0,
-    readDays: 0,
+    readChapters: 5,
+    noteCount: 12,
+    likeCount: 32,
     loginCount: 1,
-    myNotes: [],
-    myFavorites: [],
-    readingProgress: null,
-    readingStats: null,
-    profileInfo: null,
     createdAt: now,
     updatedAt: now,
     previousLoginAt: null,
@@ -145,45 +139,8 @@ const upsertByOpenid = async ({ openid, clientId = '', profile, session }) => {
   return created
 }
 
-const updateByOpenid = async (openid, changes = {}) => {
-  const users = await readUsers()
-  const index = users.findIndex(u => u.openid === openid)
-
-  if (index < 0) {
-    return null
-  }
-
-  const user = users[index]
-
-  // Allowed keys to store as user-specific data
-  const allowed = ['myNotes', 'myFavorites', 'readingProgress', 'readingStats', 'profileInfo']
-
-  const next = { ...user }
-
-  allowed.forEach(key => {
-    if (Object.prototype.hasOwnProperty.call(changes, key)) {
-      next[key] = changes[key]
-    }
-  })
-
-  // Sync some summary counters if readingStats provided
-  if (changes.readingStats) {
-    const stats = changes.readingStats || {}
-    if (typeof stats.readChapters === 'number') next.readChapters = stats.readChapters
-    if (typeof stats.noteCount === 'number') next.noteCount = stats.noteCount
-    if (typeof stats.likeCount === 'number') next.likeCount = stats.likeCount
-  }
-
-  next.updatedAt = new Date().toISOString()
-
-  users[index] = next
-  await writeUsers(users)
-  return next
-}
-
 module.exports = {
   findByOpenid,
   upsertByOpenid,
-  updateByOpenid,
   toPublicUser
 }

@@ -121,7 +121,6 @@ Page({
         },
         success(res) {
           try {
-            // 处理响应数据：移除BOM字符和多余空格
             const dataString = typeof res.data === 'string' 
               ? res.data.trim().replace(/^\uFEFF/, '') 
               : JSON.stringify(res.data)

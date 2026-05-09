@@ -22,7 +22,13 @@ const getMiniProgramEnvVersion = () => {
 }
 
 // 强制将 API 指向线上地址，避免任何环境回退到本地
-const resolveApiBaseUrl = () => PROD_API_BASE_URL
+const resolveApiBaseUrl = () => {
+  const envVersion = getMiniProgramEnvVersion()
+  if (envVersion === 'develop' || envVersion === 'trial') {
+    return DEV_API_BASE_URL
+  }
+  return PROD_API_BASE_URL
+}
 
 const normalizeUserInfo = userInfo => {
   const source = userInfo || {}

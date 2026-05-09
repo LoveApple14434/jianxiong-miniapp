@@ -25,16 +25,56 @@ const authAPI = {
   }
 }
 
-const profileAPI = {
-  getData() {
-    return request({ url: '/profile/data', method: 'GET' })
+const postAPI = {
+  create(payload) {
+    return request({
+      url: '/posts',
+      method: 'POST',
+      data: payload
+    })
   },
-  saveData(payload) {
-    return request({ url: '/profile/data', method: 'POST', data: payload })
+  list(params = {}) {
+    return request({
+      url: '/posts',
+      method: 'GET',
+      data: params
+    })
+  },
+  get(postId) {
+    return request({
+      url: `/posts/${postId}`,
+      method: 'GET'
+    })
+  },
+  addComment(postId, payload) {
+    return request({
+      url: `/posts/${postId}/comments`,
+      method: 'POST',
+      data: payload
+    })
+  },
+  like(postId, delta = 1) {
+    return request({
+      url: `/posts/${postId}/like`,
+      method: 'POST',
+      data: { delta }
+    })
+  },
+  delete(postId) {
+    return request({
+      url: `/posts/${postId}`,
+      method: 'DELETE'
+    })
+  },
+  deleteComment(postId, commentId) {
+    return request({
+      url: `/posts/${postId}/comments/${commentId}`,
+      method: 'DELETE'
+    })
   }
 }
 
 module.exports = {
   authAPI,
-  profileAPI
+  postAPI
 }

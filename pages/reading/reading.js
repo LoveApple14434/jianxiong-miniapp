@@ -1,6 +1,3 @@
-const { profileAPI } = require('../../services/api')
-const { isUserLogin } = require('../../utils/util')
-
 Page({
   data: {
     currentChapter: 1,
@@ -13,12 +10,10 @@ Page({
     ],
     activeChapter: {},
     notes: [
-      { id: 1, avatar: '张', name: '张同学', time: '今天 12:30', content: '读到这里很触动，吴健雄先生在那个年代作为女性从事物理研究，需要多大的勇气和毅力。', likes: 12, isLiked: false },
-      { id: 2, avatar: '李', name: '李同学', time: '今天 10:15', content: '作为理科生，感觉实验的严谨性和美感在先生身上得到了完美体现。', likes: 8, isLiked: false },
-      { id: 3, avatar: '王', name: '王同学', time: '昨天 22:40', content: '先生的家国情怀令人敬佩，学术无国界，但学者有祖国。', likes: 24, isLiked: false }
-    ],
-    totalLikes: 0,
-    favoritedChapterIds: []
+      { id: 1, avatar: '张', name: '张同学', time: '今天 12:30', content: '读到这里很触动，吴健雄先生在那个年代作为女性从事物理研究，需要多大的勇气和毅力。', likes: 12 },
+      { id: 2, avatar: '李', name: '李同学', time: '今天 10:15', content: '作为理科生，感觉实验的严谨性和美感在先生身上得到了完美体现。', likes: 8 },
+      { id: 3, avatar: '王', name: '王同学', time: '昨天 22:40', content: '先生的家国情怀令人敬佩，学术无国界，但学者有祖国。', likes: 24 }
+    ]
   },
 
   onLoad() {
@@ -29,21 +24,6 @@ Page({
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 2 })
     }
-
-    // 从本地存储恢复点赞状态
-    const savedLikes = wx.getStorageSync('myLikes') || {}
-    const notes = this.data.notes.map(note => ({
-      ...note,
-      isLiked: Boolean(savedLikes[note.id])
-    }))
-
-    const totalLikes = Object.keys(savedLikes).length
-
-    // 加载收藏状态
-    const savedFavorites = wx.getStorageSync('myFavorites') || []
-    const favoritedChapterIds = savedFavorites.map(f => f.id)
-
-    this.setData({ notes, totalLikes, favoritedChapterIds })
   },
 
   switchChapter(e) {
@@ -53,104 +33,6 @@ Page({
   },
 
   writeNote() {
-    wx.navigateTo({
-      url: `/pages/writenote/writenote?title=${this.data.activeChapter.title}`,
-      events: {
-        notePublished: (newNote) => {
-          this.setData({
-            notes: [newNote, ...this.data.notes]
-          })
-        }
-      }
-    })
-  },
-
-  async addFavorite(e) {
-    const chapterId = e.currentTarget.dataset.id
-    const chapterData = e.currentTarget.dataset.chapter
-
-    if (!chapterData) {
-      wx.showToast({ title: '收藏失败', icon: 'none' })
-      return
-    }
-
-    const newFavorite = {
-      id: chapterId,
-      title: chapterData.title,
-      desc: chapterData.excerpt,
-      notes: chapterData.notes,
-      likes: chapterData.likes,
-      addedAt: new Date().toISOString()
-    }
-
-    const favorites = wx.getStorageSync('myFavorites') || []
-    const existingIndex = favorites.findIndex(f => f.id === chapterId)
-    let favoritedChapterIds = this.data.favoritedChapterIds || []
-    
-    if (existingIndex >= 0) {
-      favorites.splice(existingIndex, 1)
-      favoritedChapterIds = favoritedChapterIds.filter(id => id !== chapterId)
-      wx.showToast({ title: '已取消收藏', icon: 'none' })
-    } else {
-      favorites.unshift(newFavorite)
-      if (!favoritedChapterIds.includes(chapterId)) {
-        favoritedChapterIds.push(chapterId)
-      }
-      wx.showToast({ title: '已收藏', icon: 'success' })
-    }
-
-    wx.setStorageSync('myFavorites', favorites)
-    this.setData({ favoritedChapterIds })
-
-    if (isUserLogin()) {
-      const { profileAPI } = require('../../services/api')
-      try {
-        await profileAPI.saveData({ myFavorites: favorites })
-      } catch (err) {
-        console.error('同步收藏失败:', err)
-      }
-    }
-  },
-
-  async toggleLike(e) {
-    const noteId = e.currentTarget.dataset.id
-    const savedLikes = wx.getStorageSync('myLikes') || {}
-
-    const notes = this.data.notes.map(note => {
-      if (note.id === noteId) {
-        const wasLiked = Boolean(savedLikes[note.id])
-        if (wasLiked) {
-          delete savedLikes[note.id]
-        } else {
-          savedLikes[note.id] = true
-        }
-
-        wx.setStorageSync('myLikes', savedLikes)
-
-        const totalLikes = Object.keys(savedLikes).length
-
-        // 同步到后端统计
-        if (isUserLogin()) {
-          const readingStats = wx.getStorageSync('readingStats') || { readChapters: 0, noteCount: 0, likeCount: 0 }
-          readingStats.likeCount = totalLikes
-          wx.setStorageSync('readingStats', readingStats)
-
-          profileAPI.saveData({ readingStats }).catch(err => {
-            console.error('同步点赞统计失败:', err)
-          })
-        }
-
-        this.setData({ totalLikes })
-
-        return {
-          ...note,
-          isLiked: !wasLiked,
-          likes: wasLiked ? note.likes - 1 : note.likes + 1
-        }
-      }
-      return note
-    })
-
-    this.setData({ notes })
+    wx.showToast({ title: '写笔记功能开发中', icon: 'none' })
   }
 })

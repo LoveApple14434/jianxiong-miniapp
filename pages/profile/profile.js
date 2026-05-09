@@ -8,7 +8,8 @@ Page({
       { id: 'notes', icon: '📖', title: '我的书摘笔记' },
       { id: 'favorites', icon: '❤️', title: '我的收藏' },
       { id: 'progress', icon: '📊', title: '共读进度' },
-      { id: 'badges', icon: '🏆', title: '成就徽章' }
+      { id: 'badges', icon: '🏆', title: '成就徽章' },
+      { id: 'settings', icon: '⚙️', title: '设置' }
     ]
   },
 
@@ -28,11 +29,13 @@ Page({
     }
   },
 
-  buildStatList(stats = {}) {
+  buildStatList(userInfo) {
+    const stats = userInfo || {}
+
     return [
-      { value: stats.readChapters || 0, label: '已读章' },
-      { value: stats.noteCount || 0, label: '笔记数' },
-      { value: stats.likeCount || 0, label: '获赞数' }
+      { value: stats.readChapters || 5, label: '已读章' },
+      { value: stats.noteCount || 12, label: '笔记数' },
+      { value: stats.likeCount || 32, label: '获赞数' }
     ]
   },
 
@@ -55,7 +58,7 @@ Page({
     return `上次登录 ${month}-${day} ${hour}:${minute}`
   },
 
-  async syncAuthState() {
+  syncAuthState() {
     const app = getApp()
     const authState = app.getAuthState ? app.getAuthState() : {}
     const isLogin = Boolean(authState.isLogin && authState.token)
@@ -68,24 +71,11 @@ Page({
         }
       : null
 
-    let statList = this.buildStatList()
-
-    // 获取最新的 stats 数据
-    if (isLogin) {
-      try {
-        const { profileAPI } = require('../../services/api')
-        const data = await profileAPI.getData()
-        statList = this.buildStatList(data.readingStats)
-      } catch (err) {
-        console.error('获取统计数据失败:', err)
-      }
-    }
-
     this.setData({
       isLogin,
       authReady: Boolean(authState.ready),
       userInfo,
-      statList
+      statList: this.buildStatList(userInfo)
     })
   },
 
@@ -100,38 +90,18 @@ Page({
       await app.refreshLoginStatus()
     }
 
-    await this.syncAuthState()
+    this.syncAuthState()
   },
 
   onMenuTap(e) {
     const id = e.currentTarget.dataset.id
 
-    if (!this.data.isLogin) {
+    if (!this.data.isLogin && id !== 'settings') {
       this.handleLogin()
       return
     }
 
-    const routeMap = {
-      notes: '/pages/profile/notes/notes',
-      favorites: '/pages/profile/favorites/favorites',
-      progress: '/pages/profile/progress/progress',
-      badges: '/pages/profile/badges/badges',
-      // settings removed
-    }
-
-    const url = routeMap[id]
-
-    if (!url) {
-      wx.showToast({
-        title: '功能开发中',
-        icon: 'none'
-      })
-      return
-    }
-
-    wx.navigateTo({
-      url
-    })
+    wx.showToast({ title: `${id} 功能开发中`, icon: 'none' })
   },
 
   handleLogin() {
