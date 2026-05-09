@@ -44,8 +44,9 @@
             </view>
           </view>
           <text class="note-content text-body">{{item.content}}</text>
-          <view class="note-footer">
-            <text class="text-caption">❤ {{item.likes}}</text>
+          <view class="note-footer" bindtap="toggleLike" data-id="{{item.id}}">
+            <text class="like-icon {{item.isLiked ? 'liked' : ''}}">❤</text>
+            <text class="text-caption like-count">{{item.likes}}</text>
           </view>
         </view>
       </view>

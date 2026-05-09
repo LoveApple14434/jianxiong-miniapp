@@ -5,7 +5,8 @@
     "pages/timeline/timeline",
     "pages/reading/reading",
     "pages/community/community",
-    "pages/profile/profile"
+    "pages/profile/profile",
+    "pages/writenote/writenote"
   ],
   "window": {
     "navigationBarBackgroundColor": "#5B2D8E",
@@ -20,11 +21,26 @@
     "selectedColor": "#5B2D8E",
     "backgroundColor": "#FFFFFF",
     "list": [
-      { "pagePath": "pages/index/index", "text": "发现" },
-      { "pagePath": "pages/timeline/timeline", "text": "足迹" },
-      { "pagePath": "pages/reading/reading", "text": "共读" },
-      { "pagePath": "pages/community/community", "text": "社区" },
-      { "pagePath": "pages/profile/profile", "text": "我的" }
+      {
+        "pagePath": "pages/index/index",
+        "text": "发现"
+      },
+      {
+        "pagePath": "pages/timeline/timeline",
+        "text": "足迹"
+      },
+      {
+        "pagePath": "pages/reading/reading",
+        "text": "共读"
+      },
+      {
+        "pagePath": "pages/community/community",
+        "text": "社区"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
     ]
   },
   "sitemapLocation": "sitemap.json",

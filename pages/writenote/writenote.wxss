@@ -1,0 +1,88 @@
+/* pages/writenote/writenote.wxss */
+.container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding-bottom: 180rpx;
+  box-sizing: border-box;
+}
+
+/* 编辑框区域 */
+.editor-wrapper {
+  margin: 20rpx;
+  padding: 30rpx;
+  padding-bottom: 80rpx;
+  background-color: #fff;
+  border-radius: 12rpx;
+  min-height: 70vh;
+  position: relative;
+}
+
+.note-editor {
+  width: 100%;
+  min-height: 65vh;
+  font-size: 30rpx;
+  line-height: 1.6;
+  color: #333;
+}
+
+.word-count {
+  position: absolute;
+  bottom: 30rpx;
+  right: 30rpx;
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 底部固定栏 */
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  padding: 20rpx 30rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05);
+  z-index: 100;
+}
+
+/* 章节提示 */
+.chapter-hint {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.hint-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+}
+
+.hint-text {
+  font-size: 26rpx;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 发布按钮（紫色主色调） */
+.nav-publish {
+  font-size: 28rpx;
+  color: #5B2D8E;
+  padding: 16rpx 40rpx;
+  border-radius: 40rpx;
+  background-color: #ccc;
+  font-weight: 600;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.nav-publish.active {
+  background-color: #5B2D8E;
+  box-shadow: 0 8rpx 20rpx rgba(91, 45, 142, 0.3);
+}

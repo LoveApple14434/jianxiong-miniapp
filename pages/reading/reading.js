@@ -10,9 +10,10 @@ Page({
     ],
     activeChapter: {},
     notes: [
-      { id: 1, avatar: '张', name: '张同学', time: '今天 12:30', content: '读到这里很触动，吴健雄先生在那个年代作为女性从事物理研究，需要多大的勇气和毅力。', likes: 12 },
-      { id: 2, avatar: '李', name: '李同学', time: '今天 10:15', content: '作为理科生，感觉实验的严谨性和美感在先生身上得到了完美体现。', likes: 8 },
-      { id: 3, avatar: '王', name: '王同学', time: '昨天 22:40', content: '先生的家国情怀令人敬佩，学术无国界，但学者有祖国。', likes: 24 }
+      // 给现有笔记也加上 isLiked 字段，保持数据结构一致
+      { id: 1, avatar: '张', name: '张同学', time: '今天 12:30', content: '读到这里很触动，吴健雄先生在那个年代作为女性从事物理研究，需要多大的勇气和毅力。', likes: 12, isLiked: false },
+      { id: 2, avatar: '李', name: '李同学', time: '今天 10:15', content: '作为理科生，感觉实验的严谨性和美感在先生身上得到了完美体现。', likes: 8, isLiked: false },
+      { id: 3, avatar: '王', name: '王同学', time: '昨天 22:40', content: '先生的家国情怀令人敬佩，学术无国界，但学者有祖国。', likes: 24, isLiked: false }
     ]
   },
 
@@ -32,7 +33,35 @@ Page({
     this.setData({ currentChapter: id, activeChapter: chapter })
   },
 
+  // ✅ 修改：跳转到写笔记页，并监听发布事件
   writeNote() {
-    wx.showToast({ title: '写笔记功能开发中', icon: 'none' })
+    wx.navigateTo({
+      url: `/pages/writenote/writenote?title=${this.data.activeChapter.title}`,
+      events: {
+        // 监听笔记发布事件
+        notePublished: (newNote) => {
+          // 将新笔记添加到列表顶部
+          this.setData({
+            notes: [newNote, ...this.data.notes]
+          })
+        }
+      }
+    })
+  },
+
+  // ✅ 新增：点赞功能
+  toggleLike(e) {
+    const noteId = e.currentTarget.dataset.id
+    const notes = this.data.notes.map(note => {
+      if (note.id === noteId) {
+        return {
+          ...note,
+          isLiked: !note.isLiked,
+          likes: note.isLiked ? note.likes - 1 : note.likes + 1
+        }
+      }
+      return note
+    })
+    this.setData({ notes })
   }
 })
