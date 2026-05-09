@@ -4,24 +4,26 @@ const { isUserLogin } = require('../../../utils/util')
 Page({
   data: {
     progress: {
-      readChapters: 5,
+      readChapters: 0,
       totalChapters: 5,
-      readDays: 12,
-      percent: 100,
-      currentChapter: '第五章',
+      readDays: 0,
+      percent: 0,
+      currentChapter: '未开始',
       chapterList: [
-        { id: 1, title: '第一章', finished: true },
-        { id: 2, title: '第二章', finished: true },
-        { id: 3, title: '第三章', finished: true },
-        { id: 4, title: '第四章', finished: true },
-        { id: 5, title: '第五章', finished: true }
+        { id: 1, title: '第一章', finished: false },
+        { id: 2, title: '第二章', finished: false },
+        { id: 3, title: '第三章', finished: false },
+        { id: 4, title: '第四章', finished: false },
+        { id: 5, title: '第五章', finished: false }
       ]
     },
-
-    progressStyle: 'width: 100%;'
+    progressStyle: 'width: 0%;',
+    loading: true
   },
 
   async onShow() {
+    this.setData({ loading: true })
+
     if (isUserLogin()) {
       try {
         const data = await profileAPI.getData()
@@ -38,12 +40,14 @@ Page({
               ...savedProgress,
               percent
             },
-            progressStyle: `width: ${percent}%;`
+            progressStyle: `width: ${percent}%;`,
+            loading: false
           })
 
           return
         }
       } catch (err) {
+        console.error('获取进度失败:', err)
         // fallback to local
       }
     }
@@ -61,12 +65,51 @@ Page({
           ...savedProgress,
           percent
         },
-        progressStyle: `width: ${percent}%;`
+        progressStyle: `width: ${percent}%;`,
+        loading: false
       })
 
       return
     }
 
-    this.setData({ progressStyle: `width: ${this.data.progress.percent}%;` })
+    this.setData({ loading: false })
+  },
+
+  async markChapterFinished(e) {
+    const id = e.currentTarget.dataset.id
+    const chapter = this.data.progress.chapterList.find(c => c.id === id)
+
+    if (!chapter) return
+
+    const chapterList = this.data.progress.chapterList.map(c =>
+      c.id === id ? { ...c, finished: !c.finished } : c
+    )
+
+    const readChapters = chapterList.filter(c => c.finished).length
+    const totalChapters = chapterList.length
+    const percent = Math.round((readChapters / totalChapters) * 100)
+    const currentChapter = chapterList[readChapters - 1]?.title || '未开始'
+
+    const progress = {
+      ...this.data.progress,
+      readChapters,
+      percent,
+      currentChapter,
+      chapterList
+    }
+
+    wx.setStorageSync('readingProgress', progress)
+    this.setData({
+      progress,
+      progressStyle: `width: ${percent}%;`
+    })
+
+    if (isUserLogin()) {
+      try {
+        await profileAPI.saveData({ readingProgress: progress })
+      } catch (err) {
+        console.error('保存进度失败:', err)
+      }
+    }
   }
 })

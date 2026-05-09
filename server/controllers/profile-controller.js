@@ -15,15 +15,15 @@ const getData = async (req, res) => {
     }
 
     const data = {
-      notes: user.myNotes || [],
-      favorites: user.myFavorites || [],
+      notes: user.myNotes && Array.isArray(user.myNotes) ? user.myNotes : [],
+      favorites: user.myFavorites && Array.isArray(user.myFavorites) ? user.myFavorites : [],
       readingProgress: user.readingProgress || null,
-      readingStats: user.readingStats || {
-        readChapters: user.readChapters || 5,
+      readingStats: {
+        readChapters: user.readChapters || 0,
         noteCount: user.noteCount || 0,
         likeCount: user.likeCount || 0
       },
-      profileInfo: user.profileInfo || {
+      profileInfo: {
         nickName: user.nickName || '',
         avatarText: user.nickName ? (user.nickName.charAt(0) || '健') : '健',
         readDays: user.readDays || 0

@@ -3,12 +3,15 @@ const { isUserLogin } = require('../../../utils/util')
 
 Page({
   data: {
-    badges: []
+    badges: [],
+    loading: true
   },
 
   async onShow() {
-    let profileInfo = { readDays: 12 }
-    let stats = { readChapters: 5, noteCount: 3, likeCount: 44 }
+    this.setData({ loading: true })
+
+    let profileInfo = { readDays: 0 }
+    let stats = { readChapters: 0, noteCount: 0, likeCount: 0 }
 
     if (isUserLogin()) {
       try {
@@ -16,6 +19,7 @@ Page({
         profileInfo = data.profileInfo || profileInfo
         stats = data.readingStats || stats
       } catch (err) {
+        console.error('获取用户数据失败:', err)
         // fallback to local
         profileInfo = wx.getStorageSync('profileInfo') || profileInfo
         stats = wx.getStorageSync('readingStats') || stats
@@ -63,8 +67,6 @@ Page({
       }
     ]
 
-    this.setData({
-      badges
-    })
+    this.setData({ badges, loading: false })
   }
 })

@@ -28,13 +28,11 @@ Page({
     }
   },
 
-  buildStatList(userInfo) {
-    const stats = userInfo || {}
-
+  buildStatList(stats = {}) {
     return [
-      { value: stats.readChapters || 5, label: '已读章' },
-      { value: stats.noteCount || 12, label: '笔记数' },
-      { value: stats.likeCount || 32, label: '获赞数' }
+      { value: stats.readChapters || 0, label: '已读章' },
+      { value: stats.noteCount || 0, label: '笔记数' },
+      { value: stats.likeCount || 0, label: '获赞数' }
     ]
   },
 
@@ -57,7 +55,7 @@ Page({
     return `上次登录 ${month}-${day} ${hour}:${minute}`
   },
 
-  syncAuthState() {
+  async syncAuthState() {
     const app = getApp()
     const authState = app.getAuthState ? app.getAuthState() : {}
     const isLogin = Boolean(authState.isLogin && authState.token)
@@ -70,11 +68,24 @@ Page({
         }
       : null
 
+    let statList = this.buildStatList()
+
+    // 获取最新的 stats 数据
+    if (isLogin) {
+      try {
+        const { profileAPI } = require('../../services/api')
+        const data = await profileAPI.getData()
+        statList = this.buildStatList(data.readingStats)
+      } catch (err) {
+        console.error('获取统计数据失败:', err)
+      }
+    }
+
     this.setData({
       isLogin,
       authReady: Boolean(authState.ready),
       userInfo,
-      statList: this.buildStatList(userInfo)
+      statList
     })
   },
 
@@ -89,7 +100,7 @@ Page({
       await app.refreshLoginStatus()
     }
 
-    this.syncAuthState()
+    await this.syncAuthState()
   },
 
   onMenuTap(e) {

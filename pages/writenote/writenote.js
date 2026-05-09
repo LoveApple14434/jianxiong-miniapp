@@ -1,54 +1,68 @@
-// pages/writenote/writenote.js
+const { profileAPI } = require('../../services/api')
+const { isUserLogin } = require('../../utils/util')
+
 Page({
   data: {
     content: '',
-    chapterTitle: ''
+    chapterTitle: '',
+    publishing: false
   },
 
   onLoad(options) {
-    // 接收从reading页传递过来的章节标题
     this.setData({ chapterTitle: options.title || '未知章节' })
   },
 
-  // 监听输入
   onInput(e) {
     this.setData({ content: e.detail.value })
   },
 
-  // 返回上一页
   goBack() {
     wx.navigateBack()
   },
 
-  // 发布笔记
-  publishNote() {
+  async publishNote() {
     const content = this.data.content.trim()
     if (!content) {
       wx.showToast({ title: '请输入笔记内容', icon: 'none' })
       return
     }
 
-    // 构建新笔记数据
+    this.setData({ publishing: true })
+
     const newNote = {
-      id: Date.now(), // 用时间戳作为唯一id
-      avatar: this.getUserAvatar(), // 获取用户头像文字
-      name: this.getUserName(), // 获取用户昵称
+      id: Date.now(),
+      avatar: this.getUserAvatar(),
+      name: this.getUserName(),
       time: '刚刚',
       content: content,
       likes: 0,
-      isLiked: false // 新增点赞状态字段
+      isLiked: false
     }
 
-    // 通过事件通道将新笔记传递给reading页
+    // 保存到本地存储
+    const savedNotes = wx.getStorageSync('myNotes') || []
+    const updatedNotes = [newNote, ...savedNotes]
+    wx.setStorageSync('myNotes', updatedNotes)
+
+    // 如果已登录，同步到后端
+    if (isUserLogin()) {
+      try {
+        await profileAPI.saveData({ myNotes: updatedNotes })
+      } catch (err) {
+        console.error('发布笔记到后端失败:', err)
+        wx.showToast({ title: '笔记已保存，但未同步到服务器', icon: 'none' })
+      }
+    }
+
+    // 通过事件通道通知reading页面
     const eventChannel = this.getOpenerEventChannel()
     eventChannel.emit('notePublished', newNote)
 
-    // 提示发布成功并返回
     wx.showToast({ title: '发布成功', icon: 'success' })
+    this.setData({ publishing: false })
     setTimeout(() => wx.navigateBack(), 500)
   },
 
-  // 获取用户头像文字（这里用默认值，实际可从全局状态获取）
   getUserAvatar() {
     const app = getApp()
     const userInfo = app.getAuthState ? app.getAuthState().userInfo : null
@@ -58,7 +72,6 @@ Page({
     return '我'
   },
 
-  // 获取用户昵称
   getUserName() {
     const app = getApp()
     const userInfo = app.getAuthState ? app.getAuthState().userInfo : null
