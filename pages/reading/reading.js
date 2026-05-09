@@ -60,6 +60,47 @@ Page({
     })
   },
 
+  async addFavorite(e) {
+    const chapterId = e.currentTarget.dataset.id
+    const chapterData = e.currentTarget.dataset.chapter
+
+    if (!chapterData) {
+      wx.showToast({ title: '收藏失败', icon: 'none' })
+      return
+    }
+
+    const newFavorite = {
+      id: chapterId,
+      title: chapterData.title,
+      desc: chapterData.excerpt,
+      notes: chapterData.notes,
+      likes: chapterData.likes,
+      addedAt: new Date().toISOString()
+    }
+
+    const favorites = wx.getStorageSync('myFavorites') || []
+    const existingIndex = favorites.findIndex(f => f.id === chapterId)
+    
+    if (existingIndex >= 0) {
+      favorites.splice(existingIndex, 1)
+      wx.showToast({ title: '已取消收藏', icon: 'none' })
+    } else {
+      favorites.unshift(newFavorite)
+      wx.showToast({ title: '已收藏', icon: 'success' })
+    }
+
+    wx.setStorageSync('myFavorites', favorites)
+
+    if (isUserLogin()) {
+      const { profileAPI } = require('../../services/api')
+      try {
+        await profileAPI.saveData({ myFavorites: favorites })
+      } catch (err) {
+        console.error('同步收藏失败:', err)
+      }
+    }
+  },
+
   async toggleLike(e) {
     const noteId = e.currentTarget.dataset.id
     const savedLikes = wx.getStorageSync('myLikes') || {}
@@ -79,8 +120,9 @@ Page({
 
         // 同步到后端统计
         if (isUserLogin()) {
-          const readingStats = wx.getStorageSync('readingStats') || { likeCount: 0 }
+          const readingStats = wx.getStorageSync('readingStats') || { readChapters: 0, noteCount: 0, likeCount: 0 }
           readingStats.likeCount = totalLikes
+          wx.setStorageSync('readingStats', readingStats)
 
           profileAPI.saveData({ readingStats }).catch(err => {
             console.error('同步点赞统计失败:', err)

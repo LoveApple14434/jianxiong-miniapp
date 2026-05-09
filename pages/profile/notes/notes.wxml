@@ -13,6 +13,7 @@
         <text class="note-name">{{item.name}}</text>
         <text class="note-time">{{item.time}}</text>
       </view>
+      <text class="note-delete" bindtap="deleteNote" data-id="{{item.id}}">删除</text>
     </view>
 
     <text class="note-content">{{item.content}}</text>

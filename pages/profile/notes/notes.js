@@ -26,5 +26,39 @@ Page({
     const savedNotes = wx.getStorageSync('myNotes')
     const notes = (savedNotes && Array.isArray(savedNotes)) ? savedNotes : []
     this.setData({ notes, loading: false })
+  },
+
+  async deleteNote(e) {
+    const noteId = e.currentTarget.dataset.id
+
+    wx.showModal({
+      title: '删除笔记',
+      content: '确定删除这条笔记吗？',
+      confirmColor: '#5B2D8E',
+      success: async (res) => {
+        if (!res.confirm) return
+
+        const notes = this.data.notes.filter(note => note.id !== noteId)
+        wx.setStorageSync('myNotes', notes)
+
+        // 更新笔记统计
+        const readingStats = wx.getStorageSync('readingStats') || { readChapters: 0, noteCount: 0, likeCount: 0 }
+        readingStats.noteCount = notes.length
+        wx.setStorageSync('readingStats', readingStats)
+
+        this.setData({ notes })
+
+        // 同步到后端
+        if (isUserLogin()) {
+          try {
+            await profileAPI.saveData({ myNotes: notes, readingStats })
+          } catch (err) {
+            console.error('删除笔记同步失败:', err)
+          }
+        }
+
+        wx.showToast({ title: '笔记已删除', icon: 'none' })
+      }
+    })
   }
 })

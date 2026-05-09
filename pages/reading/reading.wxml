@@ -7,11 +7,16 @@
       <view
         wx:for="{{chapters}}"
         wx:key="id"
-        class="chapter-tab {{currentChapter === item.id ? 'chapter-tab-active' : ''}}"
-        bindtap="switchChapter"
-        data-id="{{item.id}}"
+        class="chapter-tab-wrapper"
       >
-        {{item.title}}
+        <view
+          class="chapter-tab {{currentChapter === item.id ? 'chapter-tab-active' : ''}}"
+          bindtap="switchChapter"
+          data-id="{{item.id}}"
+        >
+          {{item.title}}
+        </view>
+        <text class="chapter-fav-btn" bindtap="addFavorite" data-id="{{item.id}}" data-chapter="{{item}}">❤</text>
       </view>
     </view>
   </scroll-view>

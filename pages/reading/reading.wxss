@@ -20,6 +20,12 @@
   padding: 0 32rpx;
 }
 
+.chapter-tab-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
 .chapter-tab {
   padding: 12rpx 24rpx;
   border-radius: var(--radius-xl);
@@ -33,6 +39,17 @@
   background: var(--color-primary);
   color: var(--color-white);
   font-weight: 600;
+}
+
+.chapter-fav-btn {
+  font-size: 28rpx;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  padding: 8rpx;
+}
+
+.chapter-fav-btn:active {
+  opacity: 1;
 }
 
 /* 阅读区 */

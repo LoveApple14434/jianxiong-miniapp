@@ -99,6 +99,12 @@ Page({
     }
 
     wx.setStorageSync('readingProgress', progress)
+
+    // 同时更新阅读统计
+    const readingStats = wx.getStorageSync('readingStats') || { readChapters: 0, noteCount: 0, likeCount: 0 }
+    readingStats.readChapters = readChapters
+    wx.setStorageSync('readingStats', readingStats)
+
     this.setData({
       progress,
       progressStyle: `width: ${percent}%;`
@@ -106,7 +112,7 @@ Page({
 
     if (isUserLogin()) {
       try {
-        await profileAPI.saveData({ readingProgress: progress })
+        await profileAPI.saveData({ readingProgress: progress, readingStats })
       } catch (err) {
         console.error('保存进度失败:', err)
       }

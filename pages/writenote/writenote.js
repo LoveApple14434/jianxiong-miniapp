@@ -44,10 +44,15 @@ Page({
     const updatedNotes = [newNote, ...savedNotes]
     wx.setStorageSync('myNotes', updatedNotes)
 
+    // 同时更新笔记计数
+    const readingStats = wx.getStorageSync('readingStats') || { readChapters: 0, noteCount: 0, likeCount: 0 }
+    readingStats.noteCount = updatedNotes.length
+    wx.setStorageSync('readingStats', readingStats)
+
     // 如果已登录，同步到后端
     if (isUserLogin()) {
       try {
-        await profileAPI.saveData({ myNotes: updatedNotes })
+        await profileAPI.saveData({ myNotes: updatedNotes, readingStats })
       } catch (err) {
         console.error('发布笔记到后端失败:', err)
         wx.showToast({ title: '笔记已保存，但未同步到服务器', icon: 'none' })
