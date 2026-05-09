@@ -1,0 +1,24 @@
+<!-- pages/mynotes/mynotes.wxml -->
+<view class="container">
+  <view wx:if="{{notes.length === 0}}" class="empty-tip">
+    <text>📝 暂无笔记，快去写一篇吧～</text>
+  </view>
+
+  <view wx:for="{{notes}}" wx:key="id" class="note-item">
+    <view class="note-header">
+      <view class="user-info">
+        <text class="avatar">{{item.avatar}}</text>
+        <text class="name">{{item.name}}</text>
+      </view>
+      <text class="time">{{item.createTime || item.time}}</text>
+    </view>
+    <view class="note-content">{{item.content}}</view>
+    <view class="note-footer">
+      <text class="chapter">📖 {{item.chapterTitle}}</text>
+      <view class="like-box" bindtap="toggleLike" data-id="{{item.id}}">
+        <text class="like-icon">{{item.isLiked ? '❤️' : '🤍'}}</text>
+        <text>{{item.likes}}</text>
+      </view>
+    </view>
+  </view>
+</view>

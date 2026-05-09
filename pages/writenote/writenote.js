@@ -6,21 +6,17 @@ Page({
   },
 
   onLoad(options) {
-    // 接收从reading页传递过来的章节标题
     this.setData({ chapterTitle: options.title || '未知章节' })
   },
 
-  // 监听输入
   onInput(e) {
     this.setData({ content: e.detail.value })
   },
 
-  // 返回上一页
   goBack() {
     wx.navigateBack()
   },
 
-  // 发布笔记
   publishNote() {
     const content = this.data.content.trim()
     if (!content) {
@@ -30,25 +26,37 @@ Page({
 
     // 构建新笔记数据
     const newNote = {
-      id: Date.now(), // 用时间戳作为唯一id
-      avatar: this.getUserAvatar(), // 获取用户头像文字
-      name: this.getUserName(), // 获取用户昵称
+      id: Date.now(),
+      avatar: this.getUserAvatar(),
+      name: this.getUserName(),
       time: '刚刚',
       content: content,
       likes: 0,
-      isLiked: false // 新增点赞状态字段
+      isLiked: false
     }
 
-    // 通过事件通道将新笔记传递给reading页
+    // 传给上一页（reading页）
     const eventChannel = this.getOpenerEventChannel()
     eventChannel.emit('notePublished', newNote)
 
-    // 提示发布成功并返回
+    // ★ 新增：保存到“我的笔记”本地存储
+    this.saveToMyNotes(newNote)
+
     wx.showToast({ title: '发布成功', icon: 'success' })
     setTimeout(() => wx.navigateBack(), 500)
   },
 
-  // 获取用户头像文字（这里用默认值，实际可从全局状态获取）
+  // ★ 新增函数：保存笔记到个人列表
+  saveToMyNotes(note) {
+    let myNotes = wx.getStorageSync('myNotes') || []
+    myNotes.unshift({
+      ...note,
+      chapterTitle: this.data.chapterTitle,
+      createTime: new Date().toLocaleString()
+    })
+    wx.setStorageSync('myNotes', myNotes)
+  },
+
   getUserAvatar() {
     const app = getApp()
     const userInfo = app.getAuthState ? app.getAuthState().userInfo : null
@@ -58,7 +66,6 @@ Page({
     return '我'
   },
 
-  // 获取用户昵称
   getUserName() {
     const app = getApp()
     const userInfo = app.getAuthState ? app.getAuthState().userInfo : null

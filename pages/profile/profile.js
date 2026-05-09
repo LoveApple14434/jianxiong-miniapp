@@ -95,17 +95,20 @@ Page({
 
   onMenuTap(e) {
     const id = e.currentTarget.dataset.id
-
+  
     if (!this.data.isLogin && id !== 'settings') {
       this.handleLogin()
       return
     }
-
+  
+    // ★ 处理“我的书摘笔记”跳转
+    if (id === 'notes') {
+      wx.navigateTo({ url: '/pages/mynotes/mynotes' })
+      return
+    }
+  
+    // 其他菜单项暂时提示开发中
     wx.showToast({ title: `${id} 功能开发中`, icon: 'none' })
-  },
-
-  handleLogin() {
-    wx.navigateTo({ url: '/pages/login/login' })
   },
 
   handleLogout() {
@@ -127,3 +130,4 @@ Page({
     })
   }
 })
+
