@@ -8,6 +8,10 @@
     "pages/create-post/create-post",
     "pages/comment/comment",
     "pages/profile/profile",
+    "pages/profile/favorites/favorites",
+    "pages/profile/progress/progress",
+    "pages/profile/badges/badges",
+    "pages/profile/notes/notes",
     "pages/writenote/writenote"
   ],
   "window": {

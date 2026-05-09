@@ -1,0 +1,15 @@
+<view class="page-badges">
+
+<view class="badge-list">
+  <view class="badge-card {{item.unlocked ? 'badge-unlocked' : 'badge-locked'}}" wx:for="{{badges}}" wx:key="id">
+    <text class="badge-icon">{{item.icon}}</text>
+
+    <view class="badge-info">
+      <text class="badge-title">{{item.title}}</text>
+      <text class="badge-desc">{{item.desc}}</text>
+      <text class="badge-status">{{item.unlocked ? '已解锁' : '未解锁'}}</text>
+    </view>
+  </view>
+</view>
+
+</view>

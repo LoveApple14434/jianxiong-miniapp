@@ -1,0 +1,91 @@
+.page-notes {
+  min-height: 100vh;
+  padding: 32rpx;
+  background: #F8F5EF;
+}
+
+.empty {
+  margin-top: 200rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.empty-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #5B2D8E;
+}
+
+.empty-desc {
+  margin-top: 16rpx;
+  font-size: 24rpx;
+  color: #8C8C8C;
+}
+
+.note-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.note-card {
+  padding: 32rpx;
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 32rpx rgba(91, 45, 142, 0.08);
+}
+
+.note-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.note-avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #5B2D8E, #C9A96E);
+  color: #FFFFFF;
+  font-size: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+}
+
+.note-user {
+  display: flex;
+  flex-direction: column;
+}
+
+.note-name {
+  font-size: 28rpx;
+  color: #2D2D2D;
+  font-weight: 700;
+}
+
+.note-time {
+  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: #B0B0B0;
+}
+
+.note-content {
+  display: block;
+  font-size: 28rpx;
+  color: #2D2D2D;
+  line-height: 1.7;
+}
+
+.note-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24rpx;
+}
+
+.note-like {
+  font-size: 24rpx;
+  color: #8C8C8C;
+}

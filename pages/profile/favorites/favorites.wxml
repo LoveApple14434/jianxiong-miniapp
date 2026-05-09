@@ -1,0 +1,22 @@
+<view class="page-favorites">
+
+<view wx:if="{{favorites.length === 0}}" class="empty">
+  <text class="empty-title">暂无收藏</text>
+  <text class="empty-desc">你收藏的章节会显示在这里</text>
+</view>
+
+<view wx:else class="favorite-list">
+  <view class="favorite-card" wx:for="{{favorites}}" wx:key="id">
+    <text class="favorite-title">{{item.title}}</text>
+    <text class="favorite-desc">{{item.desc}}</text>
+
+    <view class="favorite-meta">
+      <text>笔记 {{item.notes}}</text>
+      <text>点赞 {{item.likes}}</text>
+    </view>
+
+    <button class="remove-btn" bindtap="removeFavorite" data-id="{{item.id}}">取消收藏</button>
+  </view>
+</view>
+
+</view>
