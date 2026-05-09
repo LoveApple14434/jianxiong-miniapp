@@ -1,134 +1,172 @@
-/* 社区页面 */
+page {
+  --primary: #5B2D8E;
+  --accent: #C9A96E;
+  --bg: #F8F5F0;
+  --text: #2D2D2D;
+  --subText: #8C8C8C;
+  --lightGold: #E8D5B5;
+  --white: #ffffff;
+  --border: #e0d8cc;
+}
 
 .page-community {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  background: var(--bg);
+  color: var(--text);
 }
 
 /* 话题导航 */
 .topic-nav {
-  background: var(--color-white);
-  border-bottom: 1rpx solid var(--color-border);
+  background: var(--white);
+  border-bottom: 1rpx solid var(--border);
   padding: 20rpx 0;
-  flex-shrink: 0;
 }
-
 .topic-nav-inner {
   display: inline-flex;
   gap: 16rpx;
   padding: 0 32rpx;
 }
-
 .topic-tag {
-  padding: 10rpx 24rpx;
-  border-radius: 4rpx;
-  font-size: 24rpx;
-  color: var(--color-text-sub);
-  background: var(--color-bg);
+  padding: 14rpx 28rpx;
+  border-radius: 50rpx;
+  font-size: 26rpx;
+  color: var(--subText);
+  background: var(--bg);
   white-space: nowrap;
-  border: 2rpx solid transparent;
+  border: 1rpx solid transparent;
 }
-
 .topic-tag-active {
-  background: var(--color-primary);
-  color: var(--color-accent);
-  border-color: var(--color-accent);
-  font-weight: 600;
+  background: var(--primary);
+  color: #fff;
+  font-weight: bold;
+  border-color: var(--accent);
 }
 
-/* 帖子列表 */
+/* 列表 */
 .post-scroll {
   flex: 1;
 }
-
-.post-scroll .container {
-  padding-bottom: calc(200rpx + env(safe-area-inset-bottom));
+.container {
+  padding: 20rpx;
+  padding-bottom: 150rpx;
 }
 
+/* 帖子卡片 */
 .post-item {
-  padding: 28rpx;
+  background: var(--white);
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  border: 1rpx solid var(--lightGold);
 }
-
 .post-header {
   display: flex;
   align-items: center;
   margin-bottom: 20rpx;
 }
-
 .post-avatar {
-  width: 72rpx;
-  height: 72rpx;
+  width: 70rpx;
+  height: 70rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
-  color: var(--color-white);
+  background: var(--primary);
+  color: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 30rpx;
-  font-weight: 700;
-  margin-right: 16rpx;
-  flex-shrink: 0;
+  font-weight: bold;
+  margin-right: 20rpx;
 }
-
 .post-user-info {
-  display: flex;
-  flex-direction: column;
   flex: 1;
 }
-
-.post-content {
-  line-height: 1.8;
-  margin-bottom: 20rpx;
+.text-subtitle {
+  display: block;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: var(--text);
+}
+.text-caption {
+  font-size: 24rpx;
+  color: var(--subText);
+}
+/* 帖子话题标签 */
+.tag-stamp {
+  background: #5B2D8E;  
+  color: #C9A96E;        
+  padding: 8rpx 16rpx;   
+  border-radius: 8rpx;    
+  font-size: 24rpx;
+  font-weight: bold;
+  letter-spacing: 1rpx;
 }
 
-/* 图片区 */
+/* 内容 */
+.post-content {
+  font-size: 30rpx;
+  line-height: 1.7;
+  margin-bottom: 20rpx;
+  color: var(--text);
+}
+
+/* 图片 */
 .post-images {
   display: flex;
+  flex-wrap: wrap;
   gap: 12rpx;
   margin-bottom: 20rpx;
 }
-
-.post-image-placeholder {
+.post-image {
   width: 200rpx;
   height: 200rpx;
-  border-radius: var(--radius-md);
-  background: var(--color-bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1rpx dashed var(--color-border);
+  border-radius: 12rpx;
+  object-fit: cover;
 }
 
-/* 互动栏 */
+/* 互动 */
 .post-actions {
   display: flex;
-  justify-content: space-around;
+  justify-content: flex-start;
+  gap: 60rpx;
   padding-top: 20rpx;
-  border-top: 1rpx solid var(--color-border);
+  border-top: 1rpx solid var(--border);
+  color: var(--subText);
 }
-
 .post-action {
-  font-size: 24rpx;
-  color: var(--color-text-sub);
-  padding: 8rpx 20rpx;
+  font-size: 26rpx;
 }
 
 /* 空状态 */
 .empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 120rpx 0;
+  text-align: center;
+  padding: 100rpx 0;
 }
-
 .empty-icon {
-  font-size: 80rpx;
-  margin-bottom: 24rpx;
+  font-size: 70rpx;
+  margin-bottom: 20rpx;
+  display: block;
+  color: var(--accent);
 }
-
 .empty-text {
   font-size: 28rpx;
-  color: var(--color-text-sub);
+  color: var(--subText);
+}
+
+/* 发帖悬浮按钮 */
+.fab {
+  position: fixed;
+  right: 40rpx;
+  bottom: 420rpx;
+  width: 100rpx;
+  height: 100rpx;
+  background: var(--primary);
+  color: var(--accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  box-shadow: 0 6rpx 20rpx rgba(91,45,142,0.2);
+  border: 2rpx solid var(--accent);
 }
