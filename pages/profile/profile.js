@@ -101,7 +101,27 @@ Page({
       return
     }
 
-    wx.showToast({ title: `${id} 功能开发中`, icon: 'none' })
+    const routeMap = {
+      notes: '/pages/profile/notes/notes',
+      favorites: '/pages/profile/favorites/favorites',
+      progress: '/pages/profile/progress/progress',
+      badges: '/pages/profile/badges/badges',
+      settings: '/pages/profile/settings/settings'
+    }
+
+    const url = routeMap[id]
+
+    if (!url) {
+      wx.showToast({
+        title: '功能开发中',
+        icon: 'none'
+      })
+      return
+    }
+
+    wx.navigateTo({
+      url
+    })
   },
 
   handleLogin() {

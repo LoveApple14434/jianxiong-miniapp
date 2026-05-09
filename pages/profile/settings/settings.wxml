@@ -1,0 +1,21 @@
+<view class="page-settings">
+
+<view class="setting-card">
+  <view class="setting-item">
+    <text class="setting-label">昵称</text>
+    <input class="setting-input" value="{{form.nickName}}" bindinput="onNickNameInput" placeholder="请输入昵称" />
+  </view>
+
+  <view class="setting-item">
+    <text class="setting-label">头像文字</text>
+    <input class="setting-input" value="{{form.avatarText}}" maxlength="1" bindinput="onAvatarTextInput" placeholder="请输入 1 个字" />
+  </view>
+
+  <button class="save-btn" bindtap="saveProfile">保存资料</button>
+</view>
+
+<view class="setting-card">
+  <button class="reset-btn" bindtap="resetDefaultData">恢复默认数据</button>
+</view>
+
+</view>

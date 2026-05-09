@@ -1,0 +1,30 @@
+<view class="page-progress">
+
+<view class="progress-card">
+  <text class="progress-title">当前共读进度</text>
+  <text class="progress-chapter">当前进度：{{progress.currentChapter}}</text>
+
+  <view class="progress-bar">
+    <view class="progress-inner" style="{{progressStyle}}"></view>
+  </view>
+
+  <text class="progress-percent">{{progress.percent}}%</text>
+
+  <view class="progress-info">
+    <text>已读 {{progress.readChapters}} / {{progress.totalChapters}} 章</text>
+    <text>已共读 {{progress.readDays}} 天</text>
+  </view>
+</view>
+
+<view class="chapter-card">
+  <text class="chapter-title">章节完成情况</text>
+
+  <view class="chapter-item" wx:for="{{progress.chapterList}}" wx:key="id">
+    <text class="chapter-name">{{item.title}}</text>
+    <text class="chapter-status {{item.finished ? 'finished' : ''}}">
+      {{item.finished ? '已完成' : '未完成'}}
+    </text>
+  </view>
+</view>
+
+</view>

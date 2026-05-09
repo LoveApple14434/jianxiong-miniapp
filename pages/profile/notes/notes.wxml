@@ -1,0 +1,26 @@
+<view class="page-notes">
+
+<view wx:if="{{notes.length === 0}}" class="empty">
+  <text class="empty-title">暂无书摘笔记</text>
+  <text class="empty-desc">你写下的书摘和感悟会显示在这里</text>
+</view>
+
+<view wx:else class="note-list">
+  <view class="note-card" wx:for="{{notes}}" wx:key="id">
+    <view class="note-header">
+      <view class="note-avatar">{{item.avatar}}</view>
+      <view class="note-user">
+        <text class="note-name">{{item.name}}</text>
+        <text class="note-time">{{item.time}}</text>
+      </view>
+    </view>
+
+    <text class="note-content">{{item.content}}</text>
+
+    <view class="note-footer">
+      <text class="note-like">❤️ {{item.likes}}</text>
+    </view>
+  </view>
+</view>
+
+</view>
