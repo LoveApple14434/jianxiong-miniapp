@@ -1,3 +1,6 @@
+const { profileAPI } = require('../../../services/api')
+const { isUserLogin } = require('../../../utils/util')
+
 Page({
   data: {
     defaultFavorites: [
@@ -26,28 +29,34 @@ Page({
     favorites: []
   },
 
-  onShow() {
+  async onShow() {
+    if (isUserLogin()) {
+      try {
+        const data = await profileAPI.getData()
+        this.setData({ favorites: (data.favorites && data.favorites.length > 0) ? data.favorites : this.data.defaultFavorites })
+        return
+      } catch (err) {
+        // fallback
+      }
+    }
+
     const savedFavorites = wx.getStorageSync('myFavorites')
     const favorites = savedFavorites && savedFavorites.length > 0 ? savedFavorites : this.data.defaultFavorites
 
-    this.setData({
-      favorites
-    })
+    this.setData({ favorites })
   },
 
   removeFavorite(e) {
     const id = e.currentTarget.dataset.id
     const favorites = this.data.favorites.filter(item => item.id !== id)
-
     wx.setStorageSync('myFavorites', favorites)
 
-    this.setData({
-      favorites
-    })
+    this.setData({ favorites })
 
-    wx.showToast({
-      title: '已取消收藏',
-      icon: 'none'
-    })
+    if (isUserLogin()) {
+      profileAPI.saveData({ myFavorites: favorites }).catch(() => {})
+    }
+
+    wx.showToast({ title: '已取消收藏', icon: 'none' })
   }
 })

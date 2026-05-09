@@ -1,3 +1,6 @@
+const { profileAPI } = require('../../../services/api')
+const { isUserLogin } = require('../../../utils/util')
+
 Page({
   data: {
     defaultNotes: [
@@ -29,12 +32,20 @@ Page({
     notes: []
   },
 
-  onShow() {
+  async onShow() {
+    if (isUserLogin()) {
+      try {
+        const data = await profileAPI.getData()
+        this.setData({ notes: (data.notes && data.notes.length > 0) ? data.notes : this.data.defaultNotes })
+        return
+      } catch (err) {
+        // fallthrough to local storage fallback
+      }
+    }
+
     const savedNotes = wx.getStorageSync('myNotes')
     const notes = savedNotes && savedNotes.length > 0 ? savedNotes : this.data.defaultNotes
 
-    this.setData({
-      notes
-    })
+    this.setData({ notes })
   }
 })

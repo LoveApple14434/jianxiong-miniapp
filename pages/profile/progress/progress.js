@@ -1,3 +1,6 @@
+const { profileAPI } = require('../../../services/api')
+const { isUserLogin } = require('../../../utils/util')
+
 Page({
   data: {
     progress: {
@@ -18,7 +21,33 @@ Page({
     progressStyle: 'width: 100%;'
   },
 
-  onShow() {
+  async onShow() {
+    if (isUserLogin()) {
+      try {
+        const data = await profileAPI.getData()
+        const savedProgress = data.readingProgress
+
+        if (savedProgress) {
+          const readChapters = savedProgress.readChapters || 0
+          const totalChapters = savedProgress.totalChapters || 5
+          const percent = Math.round((readChapters / totalChapters) * 100)
+
+          this.setData({
+            progress: {
+              ...this.data.progress,
+              ...savedProgress,
+              percent
+            },
+            progressStyle: `width: ${percent}%;`
+          })
+
+          return
+        }
+      } catch (err) {
+        // fallback to local
+      }
+    }
+
     const savedProgress = wx.getStorageSync('readingProgress')
 
     if (savedProgress) {
@@ -38,8 +67,6 @@ Page({
       return
     }
 
-    this.setData({
-      progressStyle: `width: ${this.data.progress.percent}%;`
-    })
+    this.setData({ progressStyle: `width: ${this.data.progress.percent}%;` })
   }
 })

@@ -9,7 +9,6 @@
     "pages/profile/favorites/favorites",
     "pages/profile/progress/progress",
     "pages/profile/badges/badges",
-    "pages/profile/settings/settings",
     "pages/profile/notes/notes",
     "pages/writenote/writenote"
   ],

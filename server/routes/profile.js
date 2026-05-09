@@ -1,0 +1,11 @@
+const express = require('express')
+
+const { authRequired } = require('../middleware/auth')
+const { getData, saveData } = require('../controllers/profile-controller')
+
+const router = express.Router()
+
+router.get('/data', authRequired, getData)
+router.post('/data', authRequired, saveData)
+
+module.exports = router

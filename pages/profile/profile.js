@@ -8,8 +8,7 @@ Page({
       { id: 'notes', icon: '📖', title: '我的书摘笔记' },
       { id: 'favorites', icon: '❤️', title: '我的收藏' },
       { id: 'progress', icon: '📊', title: '共读进度' },
-      { id: 'badges', icon: '🏆', title: '成就徽章' },
-      { id: 'settings', icon: '⚙️', title: '设置' }
+      { id: 'badges', icon: '🏆', title: '成就徽章' }
     ]
   },
 
@@ -96,7 +95,7 @@ Page({
   onMenuTap(e) {
     const id = e.currentTarget.dataset.id
 
-    if (!this.data.isLogin && id !== 'settings') {
+    if (!this.data.isLogin) {
       this.handleLogin()
       return
     }
@@ -106,7 +105,7 @@ Page({
       favorites: '/pages/profile/favorites/favorites',
       progress: '/pages/profile/progress/progress',
       badges: '/pages/profile/badges/badges',
-      settings: '/pages/profile/settings/settings'
+      // settings removed
     }
 
     const url = routeMap[id]

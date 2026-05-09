@@ -1,17 +1,28 @@
+const { profileAPI } = require('../../../services/api')
+const { isUserLogin } = require('../../../utils/util')
+
 Page({
   data: {
     badges: []
   },
 
-  onShow() {
-    const profileInfo = wx.getStorageSync('profileInfo') || {
-      readDays: 12
-    }
+  async onShow() {
+    let profileInfo = { readDays: 12 }
+    let stats = { readChapters: 5, noteCount: 3, likeCount: 44 }
 
-    const stats = wx.getStorageSync('readingStats') || {
-      readChapters: 5,
-      noteCount: 3,
-      likeCount: 44
+    if (isUserLogin()) {
+      try {
+        const data = await profileAPI.getData()
+        profileInfo = data.profileInfo || profileInfo
+        stats = data.readingStats || stats
+      } catch (err) {
+        // fallback to local
+        profileInfo = wx.getStorageSync('profileInfo') || profileInfo
+        stats = wx.getStorageSync('readingStats') || stats
+      }
+    } else {
+      profileInfo = wx.getStorageSync('profileInfo') || profileInfo
+      stats = wx.getStorageSync('readingStats') || stats
     }
 
     const badges = [
