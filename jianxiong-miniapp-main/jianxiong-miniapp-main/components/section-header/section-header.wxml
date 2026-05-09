@@ -1,9 +1,0 @@
-<view class="section-header">
-  <view class="section-left">
-    <view class="section-bar"></view>
-    <text class="section-title">{{title}}</text>
-  </view>
-  <view class="section-more" wx:if="{{showMore}}" bindtap="onMoreTap">
-    <text class="section-more-text">{{moreText}} →</text>
-  </view>
-</view>
