@@ -1,0 +1,72 @@
+/* pages/favorites/favorites.wxss */
+.container {
+  padding: 30rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+.empty-tip {
+  text-align: center;
+  margin-top: 300rpx;
+  color: #999;
+  font-size: 30rpx;
+}
+.favorite-item {
+  background-color: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
+}
+.note-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid #eee;
+}
+.user-info {
+  display: flex;
+  align-items: center;
+}
+.avatar {
+  width: 60rpx;
+  height: 60rpx;
+  background-color: #5B2D8E;
+  color: white;
+  text-align: center;
+  line-height: 60rpx;
+  border-radius: 50%;
+  font-size: 28rpx;
+  margin-right: 20rpx;
+}
+.name {
+  font-size: 28rpx;
+  font-weight: 500;
+}
+.time {
+  font-size: 24rpx;
+  color: #999;
+}
+.note-content {
+  font-size: 30rpx;
+  line-height: 1.5;
+  color: #333;
+  margin: 20rpx 0;
+}
+.note-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #eee;
+}
+.chapter {
+  font-size: 24rpx;
+  color: #5B2D8E;
+}
+.like-count {
+  font-size: 24rpx;
+  color: #999;
+}

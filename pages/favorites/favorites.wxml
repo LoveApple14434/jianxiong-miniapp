@@ -1,0 +1,21 @@
+<!-- pages/favorites/favorites.wxml -->
+<view class="container">
+  <view wx:if="{{favorites.length === 0}}" class="empty-tip">
+    <text>⭐️ 暂无收藏，去点赞你喜欢的笔记吧～</text>
+  </view>
+
+  <view wx:for="{{favorites}}" wx:key="id" class="favorite-item">
+    <view class="note-header">
+      <view class="user-info">
+        <text class="avatar">{{item.avatar}}</text>
+        <text class="name">{{item.name}}</text>
+      </view>
+      <text class="time">{{item.collectedAt || item.time}}</text>
+    </view>
+    <view class="note-content">{{item.content}}</view>
+    <view class="note-footer">
+      <text class="chapter">📖 {{item.chapterTitle}}</text>
+      <view class="like-count">❤️ {{item.likes}}</view>
+    </view>
+  </view>
+</view>

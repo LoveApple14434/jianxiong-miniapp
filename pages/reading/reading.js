@@ -49,19 +49,51 @@ Page({
     })
   },
 
-  // ✅ 新增：点赞功能
-  toggleLike(e) {
-    const noteId = e.currentTarget.dataset.id
-    const notes = this.data.notes.map(note => {
-      if (note.id === noteId) {
-        return {
-          ...note,
-          isLiked: !note.isLiked,
-          likes: note.isLiked ? note.likes - 1 : note.likes + 1
-        }
+ // 点赞/取消点赞（同时同步收藏夹）
+toggleLike(e) {
+  const noteId = e.currentTarget.dataset.id;
+  let notes = this.data.notes;
+  let targetNote = null;
+
+  const updatedNotes = notes.map(note => {
+    if (note.id === noteId) {
+      targetNote = { ...note };
+      const newLiked = !note.isLiked;
+      return {
+        ...note,
+        isLiked: newLiked,
+        likes: newLiked ? note.likes + 1 : note.likes - 1
+      };
+    }
+    return note;
+  });
+
+  this.setData({ notes: updatedNotes });
+
+  if (targetNote) {
+    // 更新目标笔记的点赞状态
+    targetNote.isLiked = !targetNote.isLiked;
+    targetNote.likes = targetNote.isLiked ? targetNote.likes + 1 : targetNote.likes - 1;
+
+    // 维护“我的收藏”本地存储
+    let favorites = wx.getStorageSync('favorites') || [];
+    if (targetNote.isLiked) {
+      // 点赞 → 添加到收藏（如果不存在）
+      const exists = favorites.some(item => item.id === noteId);
+      if (!exists) {
+        // 保存一份副本，附带章节标题和收藏时间
+        const favoriteNote = {
+          ...targetNote,
+          chapterTitle: this.data.activeChapter.title,
+          collectedAt: new Date().toLocaleString()
+        };
+        favorites.unshift(favoriteNote);
       }
-      return note
-    })
-    this.setData({ notes })
+    } else {
+      // 取消点赞 → 从收藏中移除
+      favorites = favorites.filter(item => item.id !== noteId);
+    }
+    wx.setStorageSync('favorites', favorites);
   }
+}
 })

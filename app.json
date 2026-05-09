@@ -7,7 +7,8 @@
     "pages/community/community",
     "pages/profile/profile",
     "pages/writenote/writenote",
-    "pages/mynotes/mynotes"
+    "pages/mynotes/mynotes",
+    "pages/favorites/favorites"
   ],
   "window": {
     "navigationBarBackgroundColor": "#5B2D8E",

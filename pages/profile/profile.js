@@ -94,21 +94,26 @@ Page({
   },
 
   onMenuTap(e) {
-    const id = e.currentTarget.dataset.id
+    const id = e.currentTarget.dataset.id;
   
     if (!this.data.isLogin && id !== 'settings') {
-      this.handleLogin()
-      return
+      this.handleLogin();
+      return;
     }
   
-    // ★ 处理“我的书摘笔记”跳转
+    // 处理“我的书摘笔记”
     if (id === 'notes') {
-      wx.navigateTo({ url: '/pages/mynotes/mynotes' })
-      return
+      wx.navigateTo({ url: '/pages/mynotes/mynotes' });
+      return;
     }
   
-    // 其他菜单项暂时提示开发中
-    wx.showToast({ title: `${id} 功能开发中`, icon: 'none' })
+    // ★ 新增：处理“我的收藏”
+    if (id === 'favorites') {
+      wx.navigateTo({ url: '/pages/favorites/favorites' });
+      return;
+    }
+  
+    wx.showToast({ title: `${id} 功能开发中`, icon: 'none' });
   },
 
   handleLogout() {
