@@ -27,7 +27,7 @@
         </view>
         <text class="excerpt-text text-quote">{{activeChapter.excerpt}}</text>
         <view class="excerpt-meta">
-          <text class="text-caption">{{activeChapter.notes}} 条笔记</text>
+          <text class="text-caption notes-link" bindtap="viewNotes">{{activeChapter.notes}} 条笔记</text>
           <text class="text-caption">{{activeChapter.likes}} 人点赞</text>
         </view>
       </view>

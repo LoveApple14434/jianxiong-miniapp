@@ -49,6 +49,13 @@ Page({
       avatarUrl = source.avatar.trim();
     }
 
+    // 处理HTTP头像URL，微信小程序不支持HTTP图片
+    if (avatarUrl && avatarUrl.startsWith('http://')) {
+      avatarUrl = nickName.charAt(0);
+    } else if (!avatarUrl) {
+      avatarUrl = nickName.charAt(0);
+    }
+
     this.setData({
       myName: nickName,
       myAvatar: avatarUrl

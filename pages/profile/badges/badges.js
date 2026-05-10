@@ -1,4 +1,4 @@
-const { profileAPI } = require('../../../services/api')
+const { profileAPI } = require('../../../services/api.js')
 const { isUserLogin } = require('../../../utils/util')
 
 Page({

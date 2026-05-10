@@ -192,10 +192,16 @@
 }
 
 /* 头像按钮 */
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 32rpx;
+}
+
 .avatar-choose-btn {
   width: 168rpx;
   height: 168rpx;
-  margin-top: 32rpx;
   padding: 0;
   background: transparent;
   border-radius: 50%;
@@ -213,13 +219,42 @@
 .avatar-preview {
   width: 100%;
   height: 100%;
+  border-radius: 50%;
+}
+
+.avatar-preview-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #5B2D8E, #C9A96E);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-placeholder-text {
+  color: #FFFFFF;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.avatar-options {
+  margin-top: 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
 }
 
 .avatar-help-text {
-  display: block;
-  margin-top: 12rpx;
   font-size: 20rpx;
   color: #8C8C8C;
+}
+
+.avatar-wechat-btn {
+  padding: 12rpx 24rpx;
+  font-size: 24rpx;
+  border-radius: 20rpx;
 }
 
 /* 昵称输入框 */

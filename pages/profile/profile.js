@@ -1,3 +1,5 @@
+const { profileAPI } = require('../../services/api.js')
+
 Page({
   data: {
     isLogin: false,
@@ -18,9 +20,19 @@ Page({
     const nickName = typeof source.nickName === 'string' && source.nickName.trim()
       ? source.nickName.trim()
       : (typeof source.nickname === 'string' && source.nickname.trim() ? source.nickname.trim() : '')
-    const avatarUrl = typeof source.avatarUrl === 'string' && source.avatarUrl.trim()
-      ? source.avatarUrl.trim()
-      : (typeof source.avatar === 'string' && source.avatar.trim() ? source.avatar.trim() : '')
+
+    let avatarUrl = ''
+    if (typeof source.avatarUrl === 'string' && source.avatarUrl.trim()) {
+      avatarUrl = source.avatarUrl.trim()
+    } else if (typeof source.avatar === 'string' && source.avatar.trim()) {
+      avatarUrl = source.avatar.trim()
+    }
+
+    // 处理HTTP头像URL，微信小程序不支持HTTP图片
+    if (avatarUrl && avatarUrl.startsWith('http://')) {
+      // 如果是本地服务器的HTTP地址，使用昵称首字母代替
+      avatarUrl = ''
+    }
 
     return {
       ...source,
@@ -91,6 +103,43 @@ Page({
     }
 
     this.syncAuthState()
+
+    // 如果已登录，从后端获取数据
+    if (this.data.isLogin) {
+      try {
+        const res = await profileAPI.getData()
+        if (res.code === 0) {
+          const data = res.data
+          // 更新本地数据
+          this.setData({
+            statList: this.buildStatList(data.readingStats),
+            // 可以添加更多数据
+          })
+          // 保存到本地存储
+          wx.setStorageSync('myNotes', data.notes)
+          wx.setStorageSync('readingStats', data.readingStats)
+
+          // 如果后端有更新的用户信息，更新头像显示
+          if (data.profileInfo) {
+            const updatedUserInfo = this.normalizeUserInfo(data.profileInfo)
+            if (updatedUserInfo.avatarUrl || updatedUserInfo.nickName) {
+              const currentUserInfo = this.data.userInfo || {}
+              this.setData({
+                userInfo: {
+                  ...currentUserInfo,
+                  ...updatedUserInfo,
+                  avatarText: updatedUserInfo.nickName ? updatedUserInfo.nickName.charAt(0) : '健',
+                  lastLoginText: currentUserInfo.lastLoginText
+                }
+              })
+            }
+          }
+        }
+      } catch (err) {
+        console.error('获取profile数据失败:', err)
+        wx.showToast({ title: '获取数据失败', icon: 'none' })
+      }
+    }
   },
 
   onMenuTap(e) {
@@ -101,7 +150,20 @@ Page({
       return
     }
 
-    wx.showToast({ title: `${id} 功能开发中`, icon: 'none' })
+    const pageMap = {
+      notes: '/pages/profile/notes/notes',
+      favorites: '/pages/profile/favorites/favorites',
+      progress: '/pages/profile/progress/progress',
+      badges: '/pages/profile/badges/badges',
+      settings: '/pages/login/login' // 暂时用登录页面作为设置
+    }
+
+    const url = pageMap[id]
+    if (url) {
+      wx.navigateTo({ url })
+    } else {
+      wx.showToast({ title: `${id} 功能开发中`, icon: 'none' })
+    }
   },
 
   handleLogin() {

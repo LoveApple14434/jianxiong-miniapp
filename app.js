@@ -28,9 +28,19 @@ const normalizeUserInfo = userInfo => {
   const nickName = typeof source.nickName === 'string' && source.nickName.trim()
     ? source.nickName.trim()
     : (typeof source.nickname === 'string' && source.nickname.trim() ? source.nickname.trim() : '')
-  const avatarUrl = typeof source.avatarUrl === 'string' && source.avatarUrl.trim()
-    ? source.avatarUrl.trim()
-    : (typeof source.avatar === 'string' && source.avatar.trim() ? source.avatar.trim() : '')
+
+  let avatarUrl = ''
+  if (typeof source.avatarUrl === 'string' && source.avatarUrl.trim()) {
+    avatarUrl = source.avatarUrl.trim()
+  } else if (typeof source.avatar === 'string' && source.avatar.trim()) {
+    avatarUrl = source.avatar.trim()
+  }
+
+  // 处理HTTP头像URL，微信小程序不支持HTTP图片
+  if (avatarUrl && avatarUrl.startsWith('http://')) {
+    // 如果是本地服务器的HTTP地址，清空URL，使用昵称首字母
+    avatarUrl = ''
+  }
 
   return {
     ...source,

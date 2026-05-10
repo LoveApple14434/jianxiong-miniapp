@@ -70,19 +70,35 @@
   white-space: nowrap;
 }
 
-/* 发布按钮（紫色主色调） */
-.nav-publish {
-  font-size: 28rpx;
-  color: #5B2D8E;
-  padding: 16rpx 40rpx;
-  border-radius: 40rpx;
-  background-color: #ccc;
-  font-weight: 600;
-  transition: all 0.3s;
+/* 发布按钮区域 */
+.publish-section {
   flex-shrink: 0;
 }
 
+/* 发布按钮（紫色主色调） */
+.nav-publish {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 160rpx;
+  height: 72rpx;
+  border-radius: 36rpx;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.nav-publish.disabled {
+  background-color: #f0f0f0;
+  color: #ccc;
+}
+
 .nav-publish.active {
-  background-color: #5B2D8E;
-  box-shadow: 0 8rpx 20rpx rgba(91, 45, 142, 0.3);
+  background: linear-gradient(135deg, #C9A96E, #E8D5B5);
+  color: #5B2D8E;
+  box-shadow: 0 8rpx 20rpx rgba(201, 169, 110, 0.3);
+}
+
+.publish-text {
+  font-size: 28rpx;
+  font-weight: 600;
 }

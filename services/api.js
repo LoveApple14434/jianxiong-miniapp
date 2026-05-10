@@ -74,7 +74,24 @@ const postAPI = {
   }
 }
 
+const profileAPI = {
+  getData() {
+    return request({
+      url: '/profile/data',
+      method: 'GET'
+    })
+  },
+  saveData(payload) {
+    return request({
+      url: '/profile/data',
+      method: 'POST',
+      data: payload
+    })
+  }
+}
+
 module.exports = {
   authAPI,
-  postAPI
+  postAPI,
+  profileAPI
 }

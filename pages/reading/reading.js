@@ -33,6 +33,17 @@ Page({
   },
 
   writeNote() {
-    wx.showToast({ title: '写笔记功能开发中', icon: 'none' })
+    const title = this.data.activeChapter.title
+    wx.navigateTo({
+      url: `/pages/writenote/writenote?title=${encodeURIComponent(title)}`
+    })
+  },
+
+  viewNotes() {
+    // 跳转到笔记页面，传递章节信息
+    const chapter = this.data.activeChapter
+    wx.navigateTo({
+      url: `/pages/profile/notes/notes?chapter=${chapter.id}&title=${encodeURIComponent(chapter.title)}`
+    })
   }
 })

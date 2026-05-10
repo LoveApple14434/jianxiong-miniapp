@@ -68,6 +68,16 @@ Page({
     this.setData({ avatarUrl })
   },
 
+  async useWechatAvatar() {
+    try {
+      const avatarUrl = await this.getWechatAvatarUrl()
+      this.setData({ avatarUrl })
+      wx.showToast({ title: '已选择微信头像', icon: 'success' })
+    } catch (error) {
+      wx.showToast({ title: '获取微信头像失败', icon: 'none' })
+    }
+  },
+
   onNicknameBlur(e) {
     const nickName = e.detail.value
 
@@ -84,19 +94,26 @@ Page({
       return
     }
 
-    if (!avatarUrl || avatarUrl.includes('mmbiz.qpic.cn')) {
-      wx.showToast({ title: '请选择头像', icon: 'none' })
-      return
-    }
-
     this.setData({ loading: true, loginStep: 'process' })
 
     try {
-      const permanentAvatarUrl = await this.uploadAvatar(avatarUrl)
+      let finalAvatarUrl = avatarUrl
 
-      console.log('[login] avatar uploaded:', permanentAvatarUrl)
+      // 如果用户选择了自定义头像（不是默认的mmbiz.qpic.cn且不是微信头像），上传它
+      if (avatarUrl && !avatarUrl.includes('mmbiz.qpic.cn') && !avatarUrl.includes('qlogo.cn')) {
+        finalAvatarUrl = await this.uploadAvatar(avatarUrl)
+        console.log('[login] custom avatar uploaded:', finalAvatarUrl)
+      } else if (!avatarUrl || avatarUrl.includes('mmbiz.qpic.cn')) {
+        // 使用微信官方头像（已经是HTTPS）
+        finalAvatarUrl = await this.getWechatAvatarUrl()
+        console.log('[login] using wechat avatar:', finalAvatarUrl)
+      } else {
+        // avatarUrl已经是微信头像，直接使用
+        finalAvatarUrl = avatarUrl
+        console.log('[login] using existing wechat avatar:', finalAvatarUrl)
+      }
 
-      await this.performLogin(permanentAvatarUrl, nickName.trim())
+      await this.performLogin(finalAvatarUrl, nickName.trim())
     } catch (error) {
       const errorMessage = error && (error.message || error.errMsg) ? (error.message || error.errMsg) : '登录失败'
 
@@ -151,6 +168,25 @@ Page({
         fail(res) {
           console.error('[login] avatar upload failed:', res)
           reject(new Error(`头像上传失败 (${res.statusCode}): ${res.data || res.errMsg}`))
+        }
+      })
+    })
+  },
+
+  async getWechatAvatarUrl() {
+    return new Promise((resolve, reject) => {
+      wx.getUserProfile({
+        desc: '用于完善用户资料',
+        success: (res) => {
+          if (res.userInfo && res.userInfo.avatarUrl) {
+            resolve(res.userInfo.avatarUrl)
+          } else {
+            reject(new Error('无法获取微信头像'))
+          }
+        },
+        fail: (err) => {
+          console.error('[login] get wechat avatar failed:', err)
+          reject(new Error('获取微信头像失败'))
         }
       })
     })

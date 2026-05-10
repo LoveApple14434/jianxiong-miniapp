@@ -1,11 +1,25 @@
-const { profileAPI } = require('../../../services/api')
+const { profileAPI } = require('../../../services/api.js')
 const { isUserLogin } = require('../../../utils/util')
 
 Page({
   data: {
     notes: [],
     loading: true,
-    hasError: false
+    hasError: false,
+    chapterId: null,
+    chapterTitle: null,
+    isChapterView: false
+  },
+
+  onLoad(options) {
+    // 检查是否是从章节页面跳转来的
+    if (options.chapter) {
+      this.setData({
+        chapterId: parseInt(options.chapter),
+        chapterTitle: decodeURIComponent(options.title || ''),
+        isChapterView: true
+      })
+    }
   },
 
   async onShow() {
@@ -14,7 +28,13 @@ Page({
     if (isUserLogin()) {
       try {
         const data = await profileAPI.getData()
-        const notes = (data.notes && Array.isArray(data.notes)) ? data.notes : []
+        let notes = (data.notes && Array.isArray(data.notes)) ? data.notes : []
+        
+        // 如果是章节视图，过滤对应章节的笔记
+        if (this.data.isChapterView && this.data.chapterId) {
+          notes = notes.filter(note => note.chapterId === this.data.chapterId)
+        }
+        
         this.setData({ notes, loading: false })
         return
       } catch (err) {
@@ -23,9 +43,16 @@ Page({
       }
     }
 
-    const savedNotes = wx.getStorageSync('myNotes')
-    const notes = (savedNotes && Array.isArray(savedNotes)) ? savedNotes : []
-    this.setData({ notes, loading: false })
+    let savedNotes = wx.getStorageSync('myNotes')
+    savedNotes = (savedNotes && Array.isArray(savedNotes)) ? savedNotes : []
+    
+    // 如果是章节视图，过滤对应章节的笔记
+    if (this.data.isChapterView && this.data.chapterId) {
+      // 过滤对应章节的笔记
+      savedNotes = savedNotes.filter(note => note.chapterId === this.data.chapterId)
+    }
+    
+    this.setData({ notes: savedNotes, loading: false })
   },
 
   async deleteNote(e) {

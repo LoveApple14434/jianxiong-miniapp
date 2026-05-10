@@ -1,4 +1,4 @@
-const { profileAPI } = require('../../services/api')
+const { profileAPI } = require('../../services/api.js')
 const { isUserLogin } = require('../../utils/util')
 
 Page({
@@ -9,7 +9,7 @@ Page({
   },
 
   onLoad(options) {
-    this.setData({ chapterTitle: options.title || '未知章节' })
+    this.setData({ chapterTitle: decodeURIComponent(options.title || '未知章节') })
   },
 
   onInput(e) {
@@ -31,6 +31,8 @@ Page({
 
     const newNote = {
       id: Date.now(),
+      chapterId: this.getChapterId(), // 添加章节ID
+      chapterTitle: this.data.chapterTitle, // 添加章节标题
       avatar: this.getUserAvatar(),
       name: this.getUserName(),
       time: '刚刚',
@@ -50,6 +52,8 @@ Page({
     wx.setStorageSync('readingStats', readingStats)
 
     // 如果已登录，同步到后端
+    // 暂时注释掉，因为远程服务器没有profile接口
+    /*
     if (isUserLogin()) {
       try {
         await profileAPI.saveData({ myNotes: updatedNotes, readingStats })
@@ -58,6 +62,7 @@ Page({
         wx.showToast({ title: '笔记已保存，但未同步到服务器', icon: 'none' })
       }
     }
+    */
 
     // 通过事件通道通知reading页面
     const eventChannel = this.getOpenerEventChannel()
@@ -84,5 +89,10 @@ Page({
       return userInfo.nickName
     }
     return '我'
+  },
+
+  getChapterId() {
+    // 从章节标题生成一个简单的ID
+    return this.data.chapterTitle.replace(/[^\w\u4e00-\u9fa5]/g, '').substring(0, 10)
   }
 })

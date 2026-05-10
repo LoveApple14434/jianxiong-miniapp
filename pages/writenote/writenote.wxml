@@ -19,6 +19,10 @@
       <text class="hint-icon">📖</text>
       <text class="hint-text">正在为「{{chapterTitle}}」写笔记</text>
     </view>
-    <view class="nav-publish {{content.trim() ? 'active' : ''}}" bindtap="publishNote">发布</view>
+    <view class="publish-section">
+      <view class="nav-publish {{content.trim() ? 'active' : 'disabled'}}" bindtap="publishNote">
+        <text class="publish-text">{{publishing ? '发布中...' : '发布笔记'}}</text>
+      </view>
+    </view>
   </view>
 </view>
