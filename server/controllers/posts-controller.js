@@ -1,4 +1,6 @@
 const { getAllPosts, getPostById, addPost, addCommentToPost, deleteCommentFromPost, deletePost, updatePostLikes } = require('../models/posts-store')
+const { verifyToken } = require('../utils/token')
+const { findByOpenid, toPublicUser } = require('../models/user-store')
 
 const listPosts = async (req, res) => {
   try {
@@ -66,7 +68,37 @@ const createPost = async (req, res) => {
 const createComment = async (req, res) => {
   try {
     const { id } = req.params
-    const { content = '' } = req.body || {}
+    let { content = '', authorName = '', authorAvatar = '' } = req.body || {}
+
+    // 如果请求没有提供 authorName，尝试从 Authorization: Bearer <token> 中恢复用户信息
+    if (!authorName || authorName === '我') {
+      try {
+        const authHeader = req.headers.authorization || ''
+        let token = ''
+
+        if (authHeader.startsWith('Bearer ')) {
+          token = authHeader.slice(7).trim()
+        } else if (req.body && req.body.token) {
+          token = req.body.token
+        } else if (req.query && req.query.token) {
+          token = req.query.token
+        }
+
+        if (token) {
+          const decoded = verifyToken(token)
+          if (decoded && decoded.openid) {
+            const user = await findByOpenid(decoded.openid)
+            if (user) {
+              const publicUser = toPublicUser(user)
+              authorName = publicUser.nickName || publicUser.nickname || '我'
+              authorAvatar = publicUser.avatarText || (authorName ? String(authorName).charAt(0) : '我')
+            }
+          }
+        }
+      } catch (err) {
+        // token 解析失败则继续使用默认或请求中的值，不要阻塞评论创建
+      }
+    }
 
     if (!content.trim()) {
       return res.status(400).json({ code: 400, message: '评论内容不能为空' })
@@ -74,10 +106,11 @@ const createComment = async (req, res) => {
 
     const comment = {
       id: Date.now(),
-      avatar: '我',
-      name: '我',
+      avatar: authorAvatar || (authorName ? String(authorName).charAt(0) : '我'),
+      name: authorName || '我',
       time: '刚刚',
-      content: content.trim()
+      content: content.trim(),
+      isSelf: Boolean(req.headers.authorization || req.body.token || req.query.token)
     }
 
     const post = await addCommentToPost(id, comment)

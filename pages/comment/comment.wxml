@@ -23,7 +23,7 @@
        <view class="c-name-line">
          <text class="c-name">{{item.name}}</text>
          <!-- 自己的评论显示删除 -->
-          <text class="del-comment" wx:if="{{item.name === '我'}}" bindtap="delComment" data-cid="{{item.id}}">删除</text>
+          <text class="del-comment" wx:if="{{item.isSelf}}" bindtap="delComment" data-cid="{{item.id}}">删除</text>
        </view>
        <view class="c-content">{{item.content}}</view>
         <view class="c-time">{{item.time}}</view>
