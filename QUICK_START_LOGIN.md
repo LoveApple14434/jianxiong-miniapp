@@ -147,7 +147,7 @@ wx.getStorageSync('userInfo')
 //   userId: 'xxx',
 //   nickname: '用户名',
 //   phone: '18812345678',
-//   avatar: null,
+//   avatarText: '用',
 //   createdAt: '2024-01-01T...'
 // }
 

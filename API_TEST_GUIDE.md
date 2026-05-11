@@ -32,7 +32,7 @@ curl -X POST http://localhost:3000/auth/wechat-login \
     "iv": "ivBase64String",
     "userInfo": {
       "nickName": "测试用户",
-      "avatarUrl": "https://example.com/avatar.jpg",
+      "avatarText": "测",
       "gender": 1,
       "province": "北京",
       "city": "北京",
@@ -69,7 +69,7 @@ curl -X GET http://localhost:3000/user/info \
   "data": {
     "userId": "1234567890",
     "nickname": "测试用户",
-    "avatar": "https://...",
+      "avatarText": "测",
     "phone": "13800138000",
     "gender": 1,
     "createdAt": "2024-01-01T00:00:00.000Z"
@@ -117,7 +117,7 @@ curl http://localhost:3000/health
   "code": "test_code",
   "userInfo": {
     "nickName": "测试",
-    "avatarUrl": "https://example.com/avatar.jpg",
+    "avatarText": "测",
     "gender": 1
   }
 }
@@ -202,7 +202,7 @@ curl -X PUT http://localhost:3000/user/info \
   -H "Authorization: Bearer {token}" \
   -d '{
     "nickname": "新昵称",
-    "avatar": "https://..."
+    "avatarText": "新"
   }'
 ```
 

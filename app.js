@@ -23,33 +23,28 @@ const getMiniProgramEnvVersion = () => {
 // 强制将 API 指向线上地址，避免任何环境回退到本地
 const resolveApiBaseUrl = () => PROD_API_BASE_URL
 
+const getAvatarText = userInfo => {
+  const source = userInfo || {}
+  const nickName = typeof source.nickName === 'string' && source.nickName.trim()
+    ? source.nickName.trim()
+    : (typeof source.nickname === 'string' && source.nickname.trim() ? source.nickname.trim() : '')
+
+  return nickName ? nickName.charAt(0) : '健'
+}
+
 const normalizeUserInfo = userInfo => {
   const source = userInfo || {}
   const nickName = typeof source.nickName === 'string' && source.nickName.trim()
     ? source.nickName.trim()
     : (typeof source.nickname === 'string' && source.nickname.trim() ? source.nickname.trim() : '')
 
-  let avatarUrl = ''
-  if (typeof source.avatarUrl === 'string' && source.avatarUrl.trim()) {
-    avatarUrl = source.avatarUrl.trim()
-  } else if (typeof source.avatar === 'string' && source.avatar.trim()) {
-    avatarUrl = source.avatar.trim()
-  }
-
-  // 如果URL无效或为空，降级到昵称首字母显示
-  if (!avatarUrl) {
-    avatarUrl = ''
-  } else if (!avatarUrl.startsWith('http://') && !avatarUrl.startsWith('https://')) {
-    // 非HTTP(S)的URL视为无效
-    avatarUrl = ''
-  }
-
   return {
     ...source,
     nickName,
     nickname: source.nickname || nickName,
-    avatarUrl,
-    avatar: source.avatar || avatarUrl
+    avatarUrl: '',
+    avatar: getAvatarText(source),
+    avatarText: getAvatarText(source)
   }
 }
 
@@ -64,8 +59,9 @@ const mergeUserInfo = (baseUserInfo, nextUserInfo) => {
     ...next,
     nickName: next.nickName || base.nickName,
     nickname: next.nickname || base.nickname || base.nickName,
-    avatarUrl: next.avatarUrl || base.avatarUrl,
-    avatar: next.avatar || base.avatar || base.avatarUrl
+    avatarUrl: '',
+    avatar: next.avatarText || next.avatar || base.avatarText || base.avatar || base.avatarUrl || getAvatarText(next || base),
+    avatarText: next.avatarText || base.avatarText || base.avatar || base.avatarUrl || getAvatarText(next || base)
   }
 }
 

@@ -5,8 +5,7 @@
   <view class="profile-header">
     <view class="profile-glow"></view>
     <view wx:if="{{isLogin}}" class="profile-identity">
-      <image wx:if="{{userInfo.avatarUrl}}" class="profile-avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill" />
-      <view wx:else class="profile-avatar profile-avatar-placeholder">
+      <view class="profile-avatar profile-avatar-placeholder">
         <text class="avatar-text">{{userInfo.avatarText}}</text>
       </view>
       <text class="profile-name">{{userInfo.nickName || '健雄学子'}}</text>

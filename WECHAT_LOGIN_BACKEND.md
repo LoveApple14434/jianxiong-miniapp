@@ -10,7 +10,7 @@
  * 1. 前端流程：
  *    - 用户点击授权按钮
  *    - 调用 wx.login() 获取临时登录凭证 code
- *    - 调用 wx.getUserInfo() 获取用户信息
+ *    - 输入昵称并生成首字头像
  *    - 调用 wx.getPhoneNumber() 获取加密的手机号
  *    - 将 code、encryptedData、iv、userInfo 发送到后端
  * 
@@ -36,9 +36,9 @@
  *   code: "string",              // wx.login() 返回的临时登录凭证
  *   encryptedData: "string",     // wx.getPhoneNumber() 返回的加密数据
  *   iv: "string",                // 加密数据的初始向量
- *   userInfo: {                  // wx.getUserInfo() 返回的用户信息
+ *   userInfo: {                  // 用户昵称信息
  *     nickName: "string",        // 用户昵称
- *     avatarUrl: "string",       // 用户头像
+ *     avatarText: "string",      // 用户昵称首字头像文本
  *     gender: 0|1|2,             // 0=未知,1=男,2=女
  *     province: "string",
  *     city: "string",
@@ -55,7 +55,7 @@
  *     userId: "user_id",
  *     nickname: "用户昵称",
  *     phone: "联系电话",
- *     avatar: "头像url",
+ *     avatarText: "昵称首字",
  *     createdAt: "ISO时间戳",
  *     sessionKey: "session_key"  // 用于后续解密用户数据
  *   }
@@ -141,7 +141,7 @@ app.post('/auth/wechat-login', async (req, res) => {
       user = await User.create({
         openid,
         nickname: userInfo.nickName,
-        avatar: userInfo.avatarUrl,
+        avatarText: userInfo.avatarText || userInfo.nickName.charAt(0),
         gender: userInfo.gender,
         province: userInfo.province,
         city: userInfo.city,
@@ -153,7 +153,7 @@ app.post('/auth/wechat-login', async (req, res) => {
       // 更新用户信息
       user = await User.findByIdAndUpdate(user._id, {
         nickname: userInfo.nickName,
-        avatar: userInfo.avatarUrl,
+        avatarText: userInfo.avatarText || userInfo.nickName.charAt(0),
         gender: userInfo.gender,
         phone: phone,
         sessionKey: session_key,
@@ -180,7 +180,7 @@ app.post('/auth/wechat-login', async (req, res) => {
         userId: user._id,
         nickname: user.nickname,
         phone: user.phone,
-        avatar: user.avatar,
+        avatarText: user.avatarText,
         createdAt: user.createdAt,
         sessionKey: session_key
       }
@@ -198,7 +198,7 @@ app.post('/auth/wechat-login', async (req, res) => {
 const userSchema = {
   openid: String,          // 微信用户的唯一标识
   nickname: String,        // 昵称
-  avatar: String,          // 头像URL
+  avatarText: String,      // 昵称首字头像文本
   gender: Number,          // 性别 (0=未知, 1=男, 2=女)
   province: String,
   city: String,
@@ -276,10 +276,10 @@ const userSchema = {
  *    - code 有效期 5 分钟
  *    - 每次调用返回不同的 code
  * 
- * 2. wx.getUserInfo()
- *    - 获取用户基本信息
- *    - 需要用户主动授权
- *    - 返回 encryptedData 和 iv（加密）
+ * 2. 昵称输入
+ *    - 获取用户昵称
+ *    - 不需要头像权限
+ *    - 前端根据昵称首字生成 avatarText
  * 
  * 3. wx.getPhoneNumber()
  *    - 获取用户的真实手机号
@@ -315,7 +315,7 @@ const userSchema = {
  *   "city": "城市",
  *   "province": "省份",
  *   "country": "国家",
- *   "avatarUrl": "https://..."
+ *   "avatarText": "昵"
  * }
  * 
  * 手机号数据结构：

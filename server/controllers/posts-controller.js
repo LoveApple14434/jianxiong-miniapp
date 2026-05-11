@@ -28,7 +28,7 @@ const getPost = async (req, res) => {
 
 const createPost = async (req, res) => {
   try {
-    const { content = '', topicId, tag = '', images = [], authorName = '匿名', authorAvatar = '' } = req.body || {}
+    const { content = '', topicId, tag = '', images = [], authorName = '匿名' } = req.body || {}
 
     if (!content.trim()) {
       return res.status(400).json({ code: 400, message: '帖子内容不能为空' })
@@ -39,9 +39,10 @@ const createPost = async (req, res) => {
     }
 
     const finalImages = Array.isArray(images) ? images : []
+    const avatarText = authorName ? String(authorName).charAt(0) : 'A'
     const post = {
       id: Date.now(),
-      avatar: authorAvatar || (authorName ? String(authorName).charAt(0) : 'A'),
+      avatar: avatarText,
       name: authorName || '匿名',
       time: '刚刚',
       topicId: Number(topicId),

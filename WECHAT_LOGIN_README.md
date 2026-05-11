@@ -8,8 +8,11 @@
 
 ✅ **微信原生认证**
 - 使用 `wx.login()` 获取临时登录凭证
-- 使用 `wx.getUserInfo()` 获取用户信息
 - 使用 `wx.getPhoneNumber()` 获取加密手机号
+
+✅ **昵称首字头像**
+- 登录与个人中心统一使用昵称第一个字作为头像文本
+- 不再依赖微信头像权限或头像上传
 
 ✅ **完整的后端支持**
 - Node.js + Express 后端示例代码
@@ -78,7 +81,7 @@ jianxiong-miniapp/
    ↓
 3. 用户点击"授权用户信息"
    - 弹出微信授权确认
-   - 显示用户头像和昵称
+  - 输入昵称并自动生成首字头像
    ↓
 4. 用户点击"授权手机号"
    - 弹出微信授权确认
@@ -166,7 +169,7 @@ POST /auth/wechat-login
   "iv": "string",
   "userInfo": {
     "nickName": "string",
-    "avatarUrl": "string",
+    "avatarText": "string",
     "gender": 0|1|2
   }
 }
@@ -180,7 +183,7 @@ POST /auth/wechat-login
     "userId": "user id",
     "nickname": "昵称",
     "phone": "联系电话",
-    "avatar": "头像 URL",
+    "avatarText": "昵称首字",
     "createdAt": "ISO 时间戳"
   }
 }
@@ -206,7 +209,7 @@ Authorization: Bearer <token>
   "data": {
     "userId": "string",
     "nickname": "string",
-    "avatar": "string",
+    "avatarText": "string",
     "phone": "string",
     "gender": 0|1|2
   }

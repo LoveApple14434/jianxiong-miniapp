@@ -20,25 +20,11 @@ Page({
       ? source.nickName.trim()
       : (typeof source.nickname === 'string' && source.nickname.trim() ? source.nickname.trim() : '')
 
-    let avatarUrl = ''
-    if (typeof source.avatarUrl === 'string' && source.avatarUrl.trim()) {
-      avatarUrl = source.avatarUrl.trim()
-    } else if (typeof source.avatar === 'string' && source.avatar.trim()) {
-      avatarUrl = source.avatar.trim()
-    }
-
-    // 如果URL无效或为空，降级到昵称首字母显示
-    if (!avatarUrl) {
-      avatarUrl = ''
-    } else if (!avatarUrl.startsWith('http://') && !avatarUrl.startsWith('https://')) {
-      // 非HTTP(S)的URL视为无效
-      avatarUrl = ''
-    }
-
     return {
       ...source,
       nickName,
-      avatarUrl
+      avatarUrl: '',
+      avatarText: nickName ? nickName.charAt(0) : '健'
     }
   },
 
@@ -79,7 +65,6 @@ Page({
     const userInfo = normalizedUserInfo
       ? {
           ...normalizedUserInfo,
-          avatarText: normalizedUserInfo.nickName ? normalizedUserInfo.nickName.charAt(0) : '健',
           lastLoginText: this.formatLastLoginText(normalizedUserInfo.previousLoginAt)
         }
       : null
@@ -123,13 +108,12 @@ Page({
           // 如果后端有更新的用户信息，更新头像显示
           if (data.profileInfo) {
             const updatedUserInfo = this.normalizeUserInfo(data.profileInfo)
-            if (updatedUserInfo.avatarUrl || updatedUserInfo.nickName) {
+            if (updatedUserInfo.avatarText || updatedUserInfo.nickName) {
               const currentUserInfo = this.data.userInfo || {}
               this.setData({
                 userInfo: {
                   ...currentUserInfo,
                   ...updatedUserInfo,
-                  avatarText: updatedUserInfo.nickName ? updatedUserInfo.nickName.charAt(0) : '健',
                   lastLoginText: currentUserInfo.lastLoginText
                 }
               })

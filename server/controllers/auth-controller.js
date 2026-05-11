@@ -15,8 +15,7 @@ const login = async (req, res) => {
       profile: {
         nickName: profile.nickName,
         nickname: profile.nickname,
-        avatarUrl: profile.avatarUrl,
-        avatar: profile.avatar,
+        avatarText: profile.nickName || profile.nickname ? String(profile.nickName || profile.nickname).charAt(0) : '健',
         gender: profile.gender,
         country: profile.country,
         province: profile.province,
@@ -41,7 +40,7 @@ const login = async (req, res) => {
     console.log('[auth/login] resolved user:', {
       openid: session.openid,
       nickName: publicUser.nickName,
-      avatarUrl: publicUser.avatarUrl,
+      avatarText: publicUser.avatarText,
       previousLoginAt: publicUser.previousLoginAt,
       loginCount: publicUser.loginCount,
       sessionType: session.mock ? 'mock' : 'wechat'

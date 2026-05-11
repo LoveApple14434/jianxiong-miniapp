@@ -56,28 +56,17 @@ Page({
       return
     }
 
-    let nickName = "健雄学子";
-    let avatarUrl = "";
+    let nickName = '健雄学子'
 
-    const source = getCurrentUserInfo();
+    const source = getCurrentUserInfo()
 
     if (typeof source.nickName === 'string' && source.nickName.trim()) {
-      nickName = source.nickName.trim();
+      nickName = source.nickName.trim()
     } else if (typeof source.nickname === 'string' && source.nickname.trim()) {
-      nickName = source.nickname.trim();
+      nickName = source.nickname.trim()
     }
 
-
-    if (typeof source.avatarUrl === 'string' && source.avatarUrl.trim()) {
-      avatarUrl = source.avatarUrl.trim();
-    } else if (typeof source.avatar === 'string' && source.avatar.trim()) {
-      avatarUrl = source.avatar.trim();
-    }
-
-    const finalAvatar = avatarUrl && (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://'))
-      ? avatarUrl
-      : nickName.charAt(0);
-
+    const finalAvatar = nickName.charAt(0) || '健'
 
     const tag = this.data.topicList.find(t => t.id === selectedTopic)?.name || ''
     const payload = {

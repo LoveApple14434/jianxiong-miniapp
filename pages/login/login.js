@@ -7,16 +7,21 @@ const waitWechatLogin = () => new Promise((resolve, reject) => {
   })
 })
 
+const getAvatarText = name => {
+  const nickName = typeof name === 'string' && name.trim() ? name.trim() : '健雄学子'
+  return nickName.charAt(0) || '健'
+}
+
 Page({
   data: {
     loading: false,
     errorMessage: '',
     loginStep: 'welcome', // 'welcome' | 'profile' | 'process'
     loginCode: '',
-    avatarUrl: 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0',
     nickName: '',
     previewProfile: {
       nickName: '健雄学子',
+      avatarText: '健',
       signature: '登录后同步你的阅读记录与共读进度'
     },
     benefits: [
@@ -60,34 +65,23 @@ Page({
     }
   },
 
-  onChooseAvatar(e) {
-    const { avatarUrl } = e.detail
-
-    console.log('[login] avatar selected (temp):', avatarUrl)
-
-    this.setData({ avatarUrl })
-  },
-
-  async useWechatAvatar() {
-    try {
-      const avatarUrl = await this.getWechatAvatarUrl()
-      this.setData({ avatarUrl })
-      wx.showToast({ title: '已选择微信头像', icon: 'success' })
-    } catch (error) {
-      wx.showToast({ title: '获取微信头像失败', icon: 'none' })
-    }
-  },
-
   onNicknameBlur(e) {
     const nickName = e.detail.value
 
     console.log('[login] nickname input:', nickName)
 
-    this.setData({ nickName })
+    this.setData({
+      nickName,
+      previewProfile: {
+        ...this.data.previewProfile,
+        nickName: nickName || '健雄学子',
+        avatarText: getAvatarText(nickName)
+      }
+    })
   },
 
   async onConfirmProfile() {
-    const { avatarUrl, nickName } = this.data
+    const { nickName } = this.data
 
     if (!nickName || !nickName.trim()) {
       wx.showToast({ title: '请输入昵称', icon: 'none' })
@@ -97,23 +91,7 @@ Page({
     this.setData({ loading: true, loginStep: 'process' })
 
     try {
-      let finalAvatarUrl = avatarUrl
-
-      // 如果用户选择了自定义头像（不是默认的mmbiz.qpic.cn且不是微信头像），上传它
-      if (avatarUrl && !avatarUrl.includes('mmbiz.qpic.cn') && !avatarUrl.includes('qlogo.cn')) {
-        finalAvatarUrl = await this.uploadAvatar(avatarUrl)
-        console.log('[login] custom avatar uploaded:', finalAvatarUrl)
-      } else if (!avatarUrl || avatarUrl.includes('mmbiz.qpic.cn')) {
-        // 使用微信官方头像（已经是HTTPS）
-        finalAvatarUrl = await this.getWechatAvatarUrl()
-        console.log('[login] using wechat avatar:', finalAvatarUrl)
-      } else {
-        // avatarUrl已经是微信头像，直接使用
-        finalAvatarUrl = avatarUrl
-        console.log('[login] using existing wechat avatar:', finalAvatarUrl)
-      }
-
-      await this.performLogin(finalAvatarUrl, nickName.trim())
+      await this.performLogin(nickName.trim())
     } catch (error) {
       const errorMessage = error && (error.message || error.errMsg) ? (error.message || error.errMsg) : '登录失败'
 
@@ -122,77 +100,7 @@ Page({
     }
   },
 
-  async uploadAvatar(tempFilePath) {
-    return new Promise((resolve, reject) => {
-      const app = typeof getApp === 'function' ? getApp() : null
-      const apiBaseUrl = app && app.globalData && app.globalData.apiBaseUrl
-        ? app.globalData.apiBaseUrl
-        : 'https://loveapple.icu/api2/api'
-
-      wx.uploadFile({
-        url: `${apiBaseUrl}/upload/avatar`,
-        filePath: tempFilePath,
-        name: 'avatar',
-        header: {
-          Authorization: `Bearer ${app && typeof app.getToken === 'function' ? (app.getToken() || '') : ''}`
-        },
-        success(res) {
-          try {
-            const dataString = typeof res.data === 'string' 
-              ? res.data.trim().replace(/^\uFEFF/, '') 
-              : JSON.stringify(res.data)
-            
-            const response = JSON.parse(dataString)
-
-            console.log('[login] upload response:', { statusCode: res.statusCode, response })
-
-            if (res.statusCode >= 200 && res.statusCode < 300 && response.code === 0) {
-              if (!response.data || !response.data.permanentUrl) {
-                reject(new Error('响应中缺少头像URL'))
-                return
-              }
-              resolve(response.data.permanentUrl)
-              return
-            }
-
-            reject(new Error(response.message || '头像上传失败'))
-          } catch (error) {
-            console.error('[login] avatar upload parse error:', { 
-              error: error.message, 
-              statusCode: res.statusCode,
-              responseData: res.data 
-            })
-            reject(new Error('头像上传响应解析失败: ' + (error.message || '无效的JSON格式')))
-          }
-        },
-        fail(res) {
-          console.error('[login] avatar upload failed:', res)
-          reject(new Error(`头像上传失败 (${res.statusCode}): ${res.data || res.errMsg}`))
-        }
-      })
-    })
-  },
-
-  async getWechatAvatarUrl() {
-    return new Promise((resolve, reject) => {
-      wx.getUserProfile({
-        desc: '用于完善用户资料',
-        success: (res) => {
-          if (res.userInfo && res.userInfo.avatarUrl) {
-            resolve(res.userInfo.avatarUrl)
-          } else {
-            reject(new Error('无法获取微信头像'))
-          }
-        },
-        fail: (err) => {
-          console.error('[login] get wechat avatar failed:', err)
-          reject(new Error('获取微信头像失败'))
-        }
-      })
-    })
-  },
-
-  async performLogin(permanentAvatarUrl, nickName) {
+  async performLogin(nickName) {
     this.setData({ loading: true, errorMessage: '' })
 
     try {
@@ -217,8 +125,6 @@ Page({
         profile: {
           nickName,
           nickname: nickName,
-          avatarUrl: permanentAvatarUrl,
-          avatar: permanentAvatarUrl,
           gender: 0,
           country: '',
           province: '',
@@ -231,7 +137,7 @@ Page({
         code: loginPayload.code,
         clientId: loginPayload.clientId,
         nickName: loginPayload.profile.nickName,
-        avatarUrl: loginPayload.profile.avatarUrl
+        avatarText: getAvatarText(loginPayload.profile.nickName)
       })
 
       const loginResponse = await request({
@@ -243,7 +149,7 @@ Page({
 
       console.log('[login] response user:', {
         nickName: loginResponse.user && loginResponse.user.nickName,
-        avatarUrl: loginResponse.user && loginResponse.user.avatarUrl,
+        avatarText: loginResponse.user && loginResponse.user.avatarText,
         previousLoginAt: loginResponse.user && loginResponse.user.previousLoginAt,
         loginCount: loginResponse.user && loginResponse.user.loginCount,
         sessionType: loginResponse.sessionType
@@ -263,8 +169,12 @@ Page({
           loading: false,
           loginStep: 'welcome',
           loginCode: '',
-          avatarUrl: 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0',
-          nickName: ''
+          nickName: '',
+          previewProfile: {
+            nickName: '健雄学子',
+            avatarText: '健',
+            signature: '登录后同步你的阅读记录与共读进度'
+          }
         })
         wx.switchTab({ url: '/pages/profile/profile' })
       }, 250)

@@ -13,7 +13,7 @@
 
       <view class="profile-preview">
         <view class="preview-avatar preview-avatar-fallback">
-          <text class="preview-avatar-text">健</text>
+          <text class="preview-avatar-text">{{previewProfile.avatarText}}</text>
         </view>
         <text class="preview-name">{{previewProfile.nickName}}</text>
         <text class="preview-signature">{{previewProfile.signature}}</text>
@@ -39,19 +39,14 @@
     <!-- Step 2: Profile 头像昵称填写页 -->
     <view wx:if="{{loginStep === 'profile'}}" class="profile-fill-group">
       <text class="profile-fill-title">完善你的个人资料</text>
-      <text class="profile-fill-desc">选择头像，输入昵称后可以登录</text>
+      <text class="profile-fill-desc">头像将自动使用昵称第一个字</text>
 
-      <!-- 头像选择 -->
       <view class="avatar-section">
-        <button class="avatar-choose-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
-          <image wx:if="{{avatarUrl && !avatarUrl.includes('mmbiz.qpic.cn')}}" class="avatar-preview" src="{{avatarUrl}}" mode="aspectFill"></image>
-          <view wx:else class="avatar-preview avatar-preview-placeholder">
-            <text class="avatar-placeholder-text">选择头像</text>
-          </view>
-        </button>
+        <view class="avatar-preview avatar-preview-placeholder">
+          <text class="avatar-placeholder-text">{{nickName ? nickName.charAt(0) : previewProfile.avatarText}}</text>
+        </view>
         <view class="avatar-options">
-          <text class="avatar-help-text">选择头像或使用微信头像</text>
-          <view class="btn-outline avatar-wechat-btn" bindtap="useWechatAvatar">使用微信头像</view>
+          <text class="avatar-help-text">昵称会作为你的头像展示</text>
         </view>
       </view>
 

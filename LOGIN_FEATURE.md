@@ -33,7 +33,7 @@
 - `globalData.isLogin` - 登录状态标志
 - `checkLoginStatus()` - 检查登录状态
 - `isUserLogin()` - 获取登录状态
-- `getUserInfo()` - 获取用户信息
+- `getUserInfo()` - 获取用户信息（昵称首字头像）
 - `getToken()` - 获取 Token
 - `setLoginInfo()` - 设置登录信息
 - `logout()` - 登出方法

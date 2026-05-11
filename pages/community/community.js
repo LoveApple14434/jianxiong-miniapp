@@ -40,34 +40,20 @@ Page({
 
 
   getMyInfo() {
-    let nickName = "健雄学子";
-    let avatarUrl = "";
+    let nickName = '健雄学子'
 
-    const source = getCurrentUserInfo();
+    const source = getCurrentUserInfo()
 
     if (typeof source.nickName === 'string' && source.nickName.trim()) {
-      nickName = source.nickName.trim();
+      nickName = source.nickName.trim()
     } else if (typeof source.nickname === 'string' && source.nickname.trim()) {
-      nickName = source.nickname.trim();
-    }
-
-    if (typeof source.avatarUrl === 'string' && source.avatarUrl.trim()) {
-      avatarUrl = source.avatarUrl.trim();
-    } else if (typeof source.avatar === 'string' && source.avatar.trim()) {
-      avatarUrl = source.avatar.trim();
-    }
-
-    // 处理无效头像，保留可显示的首字兜底
-    if (!avatarUrl) {
-      avatarUrl = nickName.charAt(0);
-    } else if (!avatarUrl.startsWith('http://') && !avatarUrl.startsWith('https://')) {
-      avatarUrl = nickName.charAt(0);
+      nickName = source.nickname.trim()
     }
 
     this.setData({
       myName: nickName,
-      myAvatar: avatarUrl
-    });
+      myAvatar: nickName.charAt(0) || '健'
+    })
   },
 
   loadPosts() {
@@ -77,7 +63,7 @@ Page({
         const allPosts = (Array.isArray(posts) ? posts : []).map(post => ({
           ...post,
           name: post.name || post.authorName || '匿名',
-          avatar: post.avatar || post.authorAvatar || '匿名'
+          avatar: post.avatar || (post.name || post.authorName || '匿名').charAt(0) || '匿'
         }))
         this.setData({ allPosts })
         wx.setStorageSync('allPosts', allPosts)

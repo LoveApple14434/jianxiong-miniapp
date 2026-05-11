@@ -11,7 +11,7 @@
     ↓
 wx.login() 获取 code
     ↓
-wx.getUserInfo() 获取用户信息和头像
+输入昵称并生成首字头像
     ↓
 wx.getPhoneNumber() 获取加密的手机号
     ↓
@@ -46,15 +46,12 @@ onLoad() {
 }
 ```
 
-#### 用户信息授权
+#### 昵称输入
 ```javascript
-// 处理 getUserInfo 授权
-onGetUserInfo(e) {
-  if (e.detail.errMsg === 'getUserInfo:ok') {
-    const userInfo = e.detail.userInfo
-    // 保存用户信息
-    this.setData({ userInfoFromWeChat: userInfo })
-  }
+// 监听昵称输入
+onNicknameBlur(e) {
+  const nickName = e.detail.value
+  this.setData({ nickName })
 }
 ```
 
@@ -148,7 +145,7 @@ util.request({
   "iv": "加密初始向量",
   "userInfo": {
     "nickName": "用户昵称",
-    "avatarUrl": "头像 URL",
+    "avatarText": "昵称首字",
     "gender": 1,
     "province": "省份",
     "city": "城市",
@@ -167,7 +164,7 @@ util.request({
     "userId": "用户 ID",
     "nickname": "用户昵称",
     "phone": "解密后的手机号",
-    "avatar": "头像 URL",
+      "avatarText": "昵称首字",
     "createdAt": "账户创建时间",
     "sessionKey": "用于后续解密的会话密钥"
   }
@@ -222,7 +219,7 @@ if (!user) {
   user = await User.create({
     openid,
     nickname: userInfo.nickName,
-    avatar: userInfo.avatarUrl,
+    avatarText: userInfo.avatarText || userInfo.nickName.charAt(0),
     gender: userInfo.gender,
     phone: phone,
     sessionKey: session_key
@@ -250,7 +247,7 @@ const token = jwt.sign(
 | _id | ObjectId | 用户唯一ID |
 | openid | String | 微信用户唯一标识 |
 | nickname | String | 用户昵称 |
-| avatar | String | 头像 URL |
+| avatarText | String | 昵称首字头像文本 |
 | phone | String | 电话号码（解密后） |
 | gender | Number | 性别 (0=未知, 1=男, 2=女) |
 | province | String | 省份 |
@@ -315,9 +312,9 @@ const API_BASE_URL = 'https://api.example.com'  // 改为实际地址
 - 检查 base64 解码是否正确
 - 确认使用的是 AES-128-CBC 算法
 
-### Q3: 授权按钮不显示
-- 确认 button 标签的 open-type 属性正确
-- 检查 bindgetuserinfo、bindgetphonenumber 绑定是否正确
+### Q3: 昵称无法保存
+- 确认输入框的绑定和 `type="nickname"` 配置正确
+- 检查登录页是否将昵称回填到预览区域
 - 确保在真实设备或开发者工具中测试
 
 ### Q4: 手机号为空
@@ -366,7 +363,7 @@ const API_BASE_URL = 'https://api.example.com'  // 改为实际地址
 ## 参考资源
 
 - [微信小程序官方文档 - 登录](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.html)
-- [微信小程序官方文档 - 用户信息](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/user-info/wx.getUserInfo.html)
+- [微信小程序官方文档 - 输入框](https://developers.weixin.qq.com/miniprogram/dev/component/input.html)
 - [微信小程序官方文档 - 手机号](https://developers.weixin.qq.com/miniprogram/dev/api/open-api/phonenumber/index.html)
 - [微信开放平台 - code2session](https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/login/code2Session.html)
 

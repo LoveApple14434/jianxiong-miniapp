@@ -43,13 +43,10 @@ const normalizeProfile = profile => {
   const nickName = typeof profile.nickName === 'string' && profile.nickName.trim()
     ? profile.nickName.trim()
     : (typeof profile.nickname === 'string' && profile.nickname.trim() ? profile.nickname.trim() : '微信用户')
-  const avatarUrl = typeof profile.avatarUrl === 'string' && profile.avatarUrl.trim()
-    ? profile.avatarUrl.trim()
-    : (typeof profile.avatar === 'string' && profile.avatar.trim() ? profile.avatar.trim() : '')
 
   return {
     nickName,
-    avatarUrl,
+    avatarText: nickName.charAt(0) || '健',
     gender: Number(profile.gender) || 0,
     country: profile.country || '',
     province: profile.province || '',
@@ -60,7 +57,7 @@ const normalizeProfile = profile => {
 
 const mergeProfile = (existing, incoming) => ({
   nickName: incoming.nickName && incoming.nickName !== '微信用户' ? incoming.nickName : (existing.nickName || '微信用户'),
-  avatarUrl: incoming.avatarUrl || existing.avatarUrl || '',
+  avatarText: incoming.avatarText || (incoming.nickName ? incoming.nickName.charAt(0) : '') || existing.avatarText || (existing.nickName ? existing.nickName.charAt(0) : '健'),
   gender: incoming.gender || existing.gender || 0,
   country: incoming.country || existing.country || '',
   province: incoming.province || existing.province || '',
@@ -71,7 +68,7 @@ const mergeProfile = (existing, incoming) => ({
 const toPublicUser = user => ({
   id: user.id,
   nickName: user.nickName,
-  avatarUrl: user.avatarUrl,
+  avatarText: user.avatarText || (user.nickName ? user.nickName.charAt(0) : '健'),
   gender: user.gender,
   country: user.country,
   province: user.province,
@@ -135,9 +132,7 @@ const updateByOpenid = async (openid, payload = {}) => {
       updated.nickName = profileInfo.nickName.trim()
     }
 
-    if (typeof profileInfo.avatarUrl === 'string') {
-      updated.avatarUrl = profileInfo.avatarUrl.trim()
-    }
+    updated.avatarText = updated.nickName ? updated.nickName.charAt(0) : '健'
 
     if (Object.prototype.hasOwnProperty.call(profileInfo, 'readDays')) {
       updated.readDays = Number(profileInfo.readDays) || 0
@@ -168,7 +163,7 @@ const listAllNotes = async ({ chapterId } = {}) => {
       notes.push({
         ...note,
         name: note.name || user.nickName || '微信用户',
-        avatar: note.avatar || (user.avatarUrl || '').trim() || (user.nickName ? user.nickName.charAt(0) : '我')
+        avatar: note.avatar || user.avatarText || (user.nickName ? user.nickName.charAt(0) : '我')
       })
     })
   })
