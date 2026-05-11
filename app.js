@@ -36,9 +36,11 @@ const normalizeUserInfo = userInfo => {
     avatarUrl = source.avatar.trim()
   }
 
-  // 处理HTTP头像URL，微信小程序不支持HTTP图片
-  if (avatarUrl && avatarUrl.startsWith('http://')) {
-    // 如果是本地服务器的HTTP地址，清空URL，使用昵称首字母
+  // 如果URL无效或为空，降级到昵称首字母显示
+  if (!avatarUrl) {
+    avatarUrl = ''
+  } else if (!avatarUrl.startsWith('http://') && !avatarUrl.startsWith('https://')) {
+    // 非HTTP(S)的URL视为无效
     avatarUrl = ''
   }
 

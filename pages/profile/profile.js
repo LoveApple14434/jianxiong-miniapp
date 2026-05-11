@@ -8,8 +8,7 @@ Page({
     statList: [],
     menuList: [
       { id: 'notes', icon: '📖', title: '我的书摘笔记' },
-      { id: 'favorites', icon: '❤️', title: '我的收藏' },
-      { id: 'progress', icon: '📊', title: '共读进度' },
+      { id: 'favorites', icon: '👍', title: '我的点赞' },
       { id: 'badges', icon: '🏆', title: '成就徽章' },
       { id: 'settings', icon: '⚙️', title: '设置' }
     ]
@@ -28,9 +27,11 @@ Page({
       avatarUrl = source.avatar.trim()
     }
 
-    // 处理HTTP头像URL，微信小程序不支持HTTP图片
-    if (avatarUrl && avatarUrl.startsWith('http://')) {
-      // 如果是本地服务器的HTTP地址，使用昵称首字母代替
+    // 如果URL无效或为空，降级到昵称首字母显示
+    if (!avatarUrl) {
+      avatarUrl = ''
+    } else if (!avatarUrl.startsWith('http://') && !avatarUrl.startsWith('https://')) {
+      // 非HTTP(S)的URL视为无效
       avatarUrl = ''
     }
 
@@ -45,9 +46,9 @@ Page({
     const stats = userInfo || {}
 
     return [
-      { value: stats.readChapters || 5, label: '已读章' },
-      { value: stats.noteCount || 12, label: '笔记数' },
-      { value: stats.likeCount || 32, label: '获赞数' }
+      { value: stats.readChapters || 0, label: '已读章' },
+      { value: stats.noteCount || 0, label: '笔记数' },
+      { value: stats.likeCount || 0, label: '获赞数' }
     ]
   },
 
