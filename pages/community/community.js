@@ -9,6 +9,35 @@ const getCurrentUserInfo = () => {
   return app && app.userInfo ? app.userInfo : {}
 }
 
+const getAvatarText = value => {
+  if (typeof value !== 'string') {
+    return '健'
+  }
+
+  const text = value.trim()
+  return text ? text.charAt(0) : '健'
+}
+
+const normalizePostAvatar = post => {
+  const name = post.name || post.authorName || '匿名'
+  const fallbackAvatar = getAvatarText(name)
+  const avatar = typeof post.avatar === 'string' ? post.avatar.trim() : ''
+
+  if (!avatar) {
+    return fallbackAvatar
+  }
+
+  if (avatar.length > 8) {
+    return fallbackAvatar
+  }
+
+  if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
+    return avatar
+  }
+
+  return fallbackAvatar
+}
+
 Page({
   data: {
     currentTopic: 0,
@@ -28,6 +57,52 @@ Page({
   onLoad() {
     this.getMyInfo();
     this.loadPosts()
+    this.sanitizeLocalCacheOnce()
+  },
+
+  sanitizeLocalCacheOnce() {
+    try {
+      const cleanedFlag = wx.getStorageSync('cacheCleaned_allPosts_v1')
+      if (cleanedFlag) return
+
+      const raw = wx.getStorageSync('allPosts')
+      if (!Array.isArray(raw) || raw.length === 0) {
+        wx.setStorageSync('cacheCleaned_allPosts_v1', true)
+        return
+      }
+
+      const cleaned = raw.map(post => {
+        const comments = Array.isArray(post.commentsList) ? post.commentsList.map(c => {
+          const comment = { ...c }
+          if (comment.name === '我') {
+            // prefer an explicit authorName if present; otherwise fall back to 匿名
+            if (comment.authorName && comment.authorName !== '我') {
+              comment.name = comment.authorName
+            } else {
+              comment.name = '匿名'
+            }
+            comment.avatar = (comment.authorAvatar && String(comment.authorAvatar).trim().length === 1)
+              ? comment.authorAvatar.trim()
+              : (comment.name ? comment.name.charAt(0) : '匿')
+            // clear isSelf for legacy entries
+            comment.isSelf = false
+          }
+          return comment
+        }) : []
+
+        return {
+          ...post,
+          commentsList: comments,
+          comments: comments.length
+        }
+      })
+
+      wx.setStorageSync('allPosts', cleaned)
+      wx.setStorageSync('cacheCleaned_allPosts_v1', true)
+      wx.showToast({ title: '本地帖子缓存已清理', icon: 'success' })
+    } catch (error) {
+      console.error('[sanitizeLocalCacheOnce] error:', error)
+    }
   },
 
   onShow() {
@@ -63,7 +138,7 @@ Page({
         const allPosts = (Array.isArray(posts) ? posts : []).map(post => ({
           ...post,
           name: post.name || post.authorName || '匿名',
-          avatar: post.avatar || (post.name || post.authorName || '匿名').charAt(0) || '匿'
+          avatar: normalizePostAvatar(post)
         }))
         this.setData({ allPosts })
         wx.setStorageSync('allPosts', allPosts)
