@@ -1,6 +1,14 @@
 const app = getApp();
 const { postAPI } = require('../../services/api.js')
 
+const getCurrentUserInfo = () => {
+  if (app && typeof app.getUserInfo === 'function') {
+    return app.getUserInfo() || {}
+  }
+
+  return app && app.userInfo ? app.userInfo : {}
+}
+
 Page({
   data: {
     currentTopic: 0,
@@ -35,7 +43,7 @@ Page({
     let nickName = "健雄学子";
     let avatarUrl = "";
 
-    const source = app.userInfo || {};
+    const source = getCurrentUserInfo();
 
     if (typeof source.nickName === 'string' && source.nickName.trim()) {
       nickName = source.nickName.trim();
@@ -49,10 +57,10 @@ Page({
       avatarUrl = source.avatar.trim();
     }
 
-    // 处理HTTP头像URL，微信小程序不支持HTTP图片
-    if (avatarUrl && avatarUrl.startsWith('http://')) {
+    // 处理无效头像，保留可显示的首字兜底
+    if (!avatarUrl) {
       avatarUrl = nickName.charAt(0);
-    } else if (!avatarUrl) {
+    } else if (!avatarUrl.startsWith('http://') && !avatarUrl.startsWith('https://')) {
       avatarUrl = nickName.charAt(0);
     }
 

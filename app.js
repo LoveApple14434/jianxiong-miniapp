@@ -139,6 +139,8 @@ App({
     wx.setStorageSync(STORAGE_KEYS.userInfo, normalizedUserInfo)
     wx.setStorageSync(STORAGE_KEYS.expiresAt, loginExpiresAt)
 
+    this.userInfo = normalizedUserInfo
+
     this.globalData.auth = {
       token,
       userInfo: normalizedUserInfo,
@@ -154,6 +156,8 @@ App({
     wx.removeStorageSync(STORAGE_KEYS.token)
     wx.removeStorageSync(STORAGE_KEYS.userInfo)
     wx.removeStorageSync(STORAGE_KEYS.expiresAt)
+
+    this.userInfo = null
 
     this.globalData.auth = {
       token: '',
@@ -186,6 +190,7 @@ App({
       isLogin: true,
       ready: false
     }
+    this.userInfo = userInfo
 
     try {
       const authState = await request({

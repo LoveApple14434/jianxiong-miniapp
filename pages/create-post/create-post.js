@@ -1,6 +1,14 @@
 const app = getApp();
 const { postAPI } = require('../../services/api.js')
 
+const getCurrentUserInfo = () => {
+  if (app && typeof app.getUserInfo === 'function') {
+    return app.getUserInfo() || {}
+  }
+
+  return app && app.userInfo ? app.userInfo : {}
+}
+
 Page({
   data: {
     content: '',
@@ -51,7 +59,7 @@ Page({
     let nickName = "健雄学子";
     let avatarUrl = "";
 
-    const source = app.userInfo || {};
+    const source = getCurrentUserInfo();
 
     if (typeof source.nickName === 'string' && source.nickName.trim()) {
       nickName = source.nickName.trim();
@@ -66,7 +74,9 @@ Page({
       avatarUrl = source.avatar.trim();
     }
 
-    const finalAvatar = avatarUrl ? avatarUrl : nickName.charAt(0);
+    const finalAvatar = avatarUrl && (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://'))
+      ? avatarUrl
+      : nickName.charAt(0);
 
 
     const tag = this.data.topicList.find(t => t.id === selectedTopic)?.name || ''
