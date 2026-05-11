@@ -25,34 +25,32 @@ Page({
   async onShow() {
     this.setData({ loading: true, hasError: false })
 
+    let allNotes = []
+    
     if (isUserLogin()) {
       try {
         const data = await profileAPI.getData()
-        let notes = (data.notes && Array.isArray(data.notes)) ? data.notes : []
-        
-        // 如果是章节视图，过滤对应章节的笔记
-        if (this.data.isChapterView && this.data.chapterId) {
-          notes = notes.filter(note => note.chapterId === this.data.chapterId)
-        }
-        
-        this.setData({ notes, loading: false })
-        return
+        allNotes = (data.notes && Array.isArray(data.notes)) ? data.notes : []
       } catch (err) {
         console.error('获取笔记失败:', err)
-        // fallback to local storage
       }
     }
 
     let savedNotes = wx.getStorageSync('myNotes')
     savedNotes = (savedNotes && Array.isArray(savedNotes)) ? savedNotes : []
     
+    // 合并所有笔记
+    allNotes = [...savedNotes, ...allNotes]
+    
     // 如果是章节视图，过滤对应章节的笔记
     if (this.data.isChapterView && this.data.chapterId) {
-      // 过滤对应章节的笔记
-      savedNotes = savedNotes.filter(note => note.chapterId === this.data.chapterId)
+      allNotes = allNotes.filter(note => note.chapterId === this.data.chapterId)
     }
     
-    this.setData({ notes: savedNotes, loading: false })
+    // 按点赞数排序（降序）
+    allNotes.sort((a, b) => (b.likes || 0) - (a.likes || 0))
+    
+    this.setData({ notes: allNotes, loading: false })
   },
 
   async deleteNote(e) {

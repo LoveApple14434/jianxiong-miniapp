@@ -32,8 +32,8 @@
         </view>
       </view>
 
-      <!-- 精选笔记 -->
-      <section-header title="精选笔记" />
+      <!-- 全部笔记 -->
+      <section-header title="全部笔记" />
       <view class="note-list">
         <view class="note-item card" wx:for="{{notes}}" wx:key="id">
           <view class="note-header">

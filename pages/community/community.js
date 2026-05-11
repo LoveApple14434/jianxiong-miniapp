@@ -66,7 +66,11 @@ Page({
     wx.showLoading({ title: '加载中', mask: true })
     postAPI.list()
       .then(posts => {
-        const allPosts = Array.isArray(posts) ? posts : []
+        const allPosts = (Array.isArray(posts) ? posts : []).map(post => ({
+          ...post,
+          name: post.name || post.authorName || '匿名',
+          avatar: post.avatar || post.authorAvatar || '匿名'
+        }))
         this.setData({ allPosts })
         wx.setStorageSync('allPosts', allPosts)
         this.filterPosts(this.data.currentTopic)

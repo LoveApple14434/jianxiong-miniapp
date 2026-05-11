@@ -1,20 +1,7 @@
 <!-- 足迹 / 时间轴 -->
 <view class="page-timeline">
 
-  <!-- 年代快速跳转 -->
-  <scroll-view class="era-nav" scroll-x enhanced show-scrollbar="{{false}}">
-    <view class="era-nav-inner">
-      <view
-        wx:for="{{eras}}"
-        wx:key="year"
-        class="era-chip {{currentEra === item.year ? 'era-chip-active' : ''}}"
-        bindtap="jumpToEra"
-        data-year="{{item.year}}"
-      >
-        {{item.year}}
-      </view>
-    </view>
-  </scroll-view>
+  <!-- 年代快速跳转（已隐藏） -->
 
   <!-- 时间轴主体 -->
   <scroll-view class="timeline-scroll" scroll-y scroll-into-view="era-{{scrollToYear}}">

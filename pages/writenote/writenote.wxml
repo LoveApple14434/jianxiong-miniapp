@@ -20,7 +20,7 @@
       <text class="hint-text">正在为「{{chapterTitle}}」写笔记</text>
     </view>
     <view class="publish-section">
-      <view class="nav-publish {{content.trim() ? 'active' : 'disabled'}}" bindtap="publishNote">
+      <view class="nav-publish {{content ? 'active' : 'disabled'}}" bindtap="publishNote" style="{{publishing ? 'opacity: 0.7;' : ''}}">
         <text class="publish-text">{{publishing ? '发布中...' : '发布笔记'}}</text>
       </view>
     </view>

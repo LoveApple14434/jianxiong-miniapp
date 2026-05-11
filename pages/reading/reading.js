@@ -17,7 +17,22 @@ Page({
   },
 
   onLoad() {
-    this.setData({ activeChapter: this.data.chapters[0] })
+    const chapters = this.data.chapters
+    const currentChapterId = this.getDailyChapter()
+    const activeChapter = chapters.find(c => c.id === currentChapterId) || chapters[0]
+    this.setData({ 
+      currentChapter: currentChapterId,
+      activeChapter 
+    })
+  },
+
+  getDailyChapter() {
+    const date = new Date()
+    const day = date.getDate()
+    const chapters = this.data.chapters
+    // 根据日期循环章节（每天轮换一个，1-31日对应不同章节）
+    const chapterIndex = (day - 1) % chapters.length
+    return chapters[chapterIndex]?.id || 1
   },
 
   onShow() {

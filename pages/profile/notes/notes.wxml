@@ -2,7 +2,7 @@
 
   <!-- 页面标题 -->
   <view class="page-header">
-    <text class="page-title">{{isChapterView ? chapterTitle + '的笔记' : '我的书摘笔记'}}</text>
+    <text class="page-title">{{isChapterView ? '全部笔记' : '我的书摘笔记'}}</text>
   </view>
 
   <view wx:if="{{notes.length === 0}}" class="empty">
