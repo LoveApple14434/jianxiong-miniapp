@@ -51,18 +51,14 @@ Page({
     readingStats.noteCount = updatedNotes.length
     wx.setStorageSync('readingStats', readingStats)
 
-    // 如果已登录，同步到后端
-    // 暂时注释掉，因为远程服务器没有profile接口
-    /*
     if (isUserLogin()) {
       try {
         await profileAPI.saveData({ myNotes: updatedNotes, readingStats })
       } catch (err) {
         console.error('发布笔记到后端失败:', err)
-        wx.showToast({ title: '笔记已保存，但未同步到服务器', icon: 'none' })
+        wx.showToast({ title: '已保存到本地，服务器同步失败', icon: 'none' })
       }
     }
-    */
 
     // 通过事件通道通知reading页面
     const eventChannel = this.getOpenerEventChannel()

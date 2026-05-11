@@ -1,4 +1,4 @@
-const { findByOpenid, updateByOpenid } = require('../models/user-store')
+const { findByOpenid, updateByOpenid, listAllNotes } = require('../models/user-store')
 
 const getData = async (req, res) => {
   try {
@@ -17,6 +17,7 @@ const getData = async (req, res) => {
     const data = {
       notes: user.myNotes && Array.isArray(user.myNotes) ? user.myNotes : [],
       favorites: user.myFavorites && Array.isArray(user.myFavorites) ? user.myFavorites : [],
+      myLikes: user.myFavorites && Array.isArray(user.myFavorites) ? user.myFavorites : [],
       readingProgress: user.readingProgress || null,
       readingStats: {
         readChapters: user.readChapters || 0,
@@ -37,6 +38,18 @@ const getData = async (req, res) => {
   }
 }
 
+const listNotes = async (req, res) => {
+  try {
+    const { chapterId = '' } = req.query || {}
+    const notes = await listAllNotes({ chapterId })
+
+    return res.json({ code: 0, message: 'ok', data: notes })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ code: 500, message: error.message || '获取笔记失败' })
+  }
+}
+
 const saveData = async (req, res) => {
   try {
     const openid = req.auth && req.auth.decoded && req.auth.decoded.openid
@@ -50,7 +63,7 @@ const saveData = async (req, res) => {
     const allowed = {}
 
     // Accept only known keys
-    ;['myNotes', 'myFavorites', 'readingProgress', 'readingStats', 'profileInfo'].forEach(k => {
+    ;['myNotes', 'myFavorites', 'myLikes', 'readingProgress', 'readingStats', 'profileInfo'].forEach(k => {
       if (Object.prototype.hasOwnProperty.call(payload, k)) {
         allowed[k] = payload[k]
       }
@@ -71,5 +84,6 @@ const saveData = async (req, res) => {
 
 module.exports = {
   getData,
+  listNotes,
   saveData
 }

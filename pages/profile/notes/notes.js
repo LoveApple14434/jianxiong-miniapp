@@ -8,16 +8,24 @@ Page({
     hasError: false,
     chapterId: null,
     chapterTitle: null,
-    isChapterView: false
+    isChapterView: false,
+    isGlobalView: false
   },
 
   onLoad(options) {
-    // 检查是否是从章节页面跳转来的
-    if (options.chapter) {
+    const chapterId = options.chapterId || options.chapter || ''
+
+    if (chapterId) {
       this.setData({
-        chapterId: parseInt(options.chapter),
+        chapterId: decodeURIComponent(chapterId),
         chapterTitle: decodeURIComponent(options.title || ''),
-        isChapterView: true
+        isChapterView: true,
+        isGlobalView: options.global === '1'
+      })
+    } else {
+      this.setData({
+        isGlobalView: false,
+        isChapterView: false
       })
     }
   },
@@ -25,32 +33,27 @@ Page({
   async onShow() {
     this.setData({ loading: true, hasError: false })
 
-    let allNotes = []
-    
-    if (isUserLogin()) {
-      try {
-        const data = await profileAPI.getData()
-        allNotes = (data.notes && Array.isArray(data.notes)) ? data.notes : []
-      } catch (err) {
-        console.error('获取笔记失败:', err)
-      }
-    }
+    try {
+      let notes = []
 
-    let savedNotes = wx.getStorageSync('myNotes')
-    savedNotes = (savedNotes && Array.isArray(savedNotes)) ? savedNotes : []
-    
-    // 合并所有笔记
-    allNotes = [...savedNotes, ...allNotes]
-    
-    // 如果是章节视图，过滤对应章节的笔记
-    if (this.data.isChapterView && this.data.chapterId) {
-      allNotes = allNotes.filter(note => note.chapterId === this.data.chapterId)
+      if (this.data.isGlobalView || this.data.isChapterView) {
+        notes = await profileAPI.listNotes(this.data.chapterId ? { chapterId: this.data.chapterId } : {})
+      } else if (isUserLogin()) {
+        const data = await profileAPI.getData()
+        notes = (data.notes && Array.isArray(data.notes)) ? data.notes : []
+      } else {
+        notes = wx.getStorageSync('myNotes')
+        notes = (notes && Array.isArray(notes)) ? notes : []
+      }
+
+      notes = Array.isArray(notes) ? notes : []
+      notes.sort((a, b) => (b.likes || 0) - (a.likes || 0))
+
+      this.setData({ notes, loading: false })
+    } catch (error) {
+      console.error('获取笔记失败:', error)
+      this.setData({ notes: [], loading: false, hasError: true })
     }
-    
-    // 按点赞数排序（降序）
-    allNotes.sort((a, b) => (b.likes || 0) - (a.likes || 0))
-    
-    this.setData({ notes: allNotes, loading: false })
   },
 
   async deleteNote(e) {
@@ -73,7 +76,6 @@ Page({
 
         this.setData({ notes })
 
-        // 同步到后端
         if (isUserLogin()) {
           try {
             await profileAPI.saveData({ myNotes: notes, readingStats })

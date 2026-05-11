@@ -2,12 +2,12 @@
 
   <!-- 页面标题 -->
   <view class="page-header">
-    <text class="page-title">{{isChapterView ? '全部笔记' : '我的书摘笔记'}}</text>
+    <text class="page-title">{{isGlobalView ? (chapterTitle ? chapterTitle + '的全部笔记' : '全部笔记') : '我的书摘笔记'}}</text>
   </view>
 
   <view wx:if="{{notes.length === 0}}" class="empty">
-    <text class="empty-title">{{isChapterView ? '暂无笔记' : '暂无书摘笔记'}}</text>
-    <text class="empty-desc">{{isChapterView ? '这个章节还没有笔记' : '你写下的书摘和感悟会显示在这里'}}</text>
+    <text class="empty-title">{{isGlobalView ? '暂无笔记' : '暂无书摘笔记'}}</text>
+    <text class="empty-desc">{{isGlobalView ? '这个章节还没有人发布笔记' : '你写下的书摘和感悟会显示在这里'}}</text>
   </view>
 
   <view wx:else class="note-list">
@@ -18,7 +18,7 @@
           <text class="note-name">{{item.name}}</text>
           <text class="note-time">{{item.time}}</text>
         </view>
-        <text wx:if="{{!isChapterView}}" class="note-delete" bindtap="deleteNote" data-id="{{item.id}}">删除</text>
+        <text wx:if="{{!isGlobalView}}" class="note-delete" bindtap="deleteNote" data-id="{{item.id}}">删除</text>
       </view>
 
       <text class="note-content">{{item.content}}</text>

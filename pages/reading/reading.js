@@ -1,3 +1,5 @@
+const { profileAPI } = require('../../services/api.js')
+
 Page({
   data: {
     currentChapter: 1,
@@ -9,11 +11,7 @@ Page({
       { id: 5, title: '第五章', excerpt: '宇称不守恒的实验验证，让整个物理学界为之震动。这是实验物理学的巅峰时刻。', notes: 45, likes: 256 }
     ],
     activeChapter: {},
-    notes: [
-      { id: 1, avatar: '张', name: '张同学', time: '今天 12:30', content: '读到这里很触动，吴健雄先生在那个年代作为女性从事物理研究，需要多大的勇气和毅力。', likes: 12 },
-      { id: 2, avatar: '李', name: '李同学', time: '今天 10:15', content: '作为理科生，感觉实验的严谨性和美感在先生身上得到了完美体现。', likes: 8 },
-      { id: 3, avatar: '王', name: '王同学', time: '昨天 22:40', content: '先生的家国情怀令人敬佩，学术无国界，但学者有祖国。', likes: 24 }
-    ]
+    notes: []
   },
 
   onLoad() {
@@ -23,6 +21,8 @@ Page({
     this.setData({ 
       currentChapter: currentChapterId,
       activeChapter 
+    }, () => {
+      this.loadChapterNotes()
     })
   },
 
@@ -35,16 +35,51 @@ Page({
     return chapters[chapterIndex]?.id || 1
   },
 
+  getChapterKey(title) {
+    return String(title || '').replace(/[^\w\u4e00-\u9fa5]/g, '').substring(0, 10)
+  },
+
+  async loadChapterNotes() {
+    const chapter = this.data.activeChapter || {}
+
+    if (!chapter.title) {
+      return
+    }
+
+    try {
+      const chapterId = this.getChapterKey(chapter.title)
+      const notes = await profileAPI.listNotes({ chapterId })
+      const safeNotes = Array.isArray(notes) ? notes : []
+      const totalLikes = safeNotes.reduce((sum, note) => sum + (Number(note.likes) || 0), 0)
+
+      this.setData({
+        notes: safeNotes,
+        activeChapter: {
+          ...chapter,
+          notes: safeNotes.length,
+          likes: totalLikes
+        }
+      })
+    } catch (error) {
+      console.error('加载章节笔记失败:', error)
+      this.setData({ notes: [] })
+    }
+  },
+
   onShow() {
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 2 })
     }
+
+    this.loadChapterNotes()
   },
 
   switchChapter(e) {
     const id = e.currentTarget.dataset.id
     const chapter = this.data.chapters.find(c => c.id === id)
-    this.setData({ currentChapter: id, activeChapter: chapter })
+    this.setData({ currentChapter: id, activeChapter: chapter }, () => {
+      this.loadChapterNotes()
+    })
   },
 
   writeNote() {
@@ -55,10 +90,10 @@ Page({
   },
 
   viewNotes() {
-    // 跳转到笔记页面，传递章节信息
     const chapter = this.data.activeChapter
+    const chapterId = this.getChapterKey(chapter.title)
     wx.navigateTo({
-      url: `/pages/profile/notes/notes?chapter=${chapter.id}&title=${encodeURIComponent(chapter.title)}`
+      url: `/pages/profile/notes/notes?global=1&chapterId=${encodeURIComponent(chapterId)}&title=${encodeURIComponent(chapter.title)}`
     })
   }
 })

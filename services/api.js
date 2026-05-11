@@ -81,6 +81,14 @@ const profileAPI = {
       method: 'GET'
     })
   },
+  listNotes(params = {}) {
+    return request({
+      url: '/profile/notes',
+      method: 'GET',
+      data: params,
+      auth: false
+    })
+  },
   saveData(payload) {
     return request({
       url: '/profile/data',

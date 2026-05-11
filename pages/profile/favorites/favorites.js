@@ -13,7 +13,7 @@ Page({
     if (isUserLogin()) {
       try {
         const data = await profileAPI.getData()
-        const favorites = (data.myLikes && Array.isArray(data.myLikes)) ? data.myLikes : []
+        const favorites = (data.favorites && Array.isArray(data.favorites)) ? data.favorites : (data.myLikes && Array.isArray(data.myLikes) ? data.myLikes : [])
         this.setData({ favorites, loading: false })
         return
       } catch (err) {
@@ -22,8 +22,8 @@ Page({
       }
     }
 
-    const savedLikes = wx.getStorageSync('myLikes')
-    const favorites = (savedLikes && Array.isArray(savedLikes)) ? savedLikes : []
+    const savedFavorites = wx.getStorageSync('myFavorites') || wx.getStorageSync('myLikes')
+    const favorites = (savedFavorites && Array.isArray(savedFavorites)) ? savedFavorites : []
     this.setData({ favorites, loading: false })
   },
 
@@ -45,12 +45,13 @@ Page({
     const favorites = this.data.favorites.filter(item => item.id !== itemId)
     favorites.unshift(newLike)
 
+    wx.setStorageSync('myFavorites', favorites)
     wx.setStorageSync('myLikes', favorites)
     this.setData({ favorites })
 
     if (isUserLogin()) {
       try {
-        await profileAPI.saveData({ myLikes: favorites })
+        await profileAPI.saveData({ myFavorites: favorites })
       } catch (err) {
         console.error('保存点赞失败:', err)
       }
@@ -63,12 +64,13 @@ Page({
     const id = e.currentTarget.dataset.id
     const favorites = this.data.favorites.filter(item => item.id !== id)
     
+    wx.setStorageSync('myFavorites', favorites)
     wx.setStorageSync('myLikes', favorites)
     this.setData({ favorites })
 
     if (isUserLogin()) {
       try {
-        await profileAPI.saveData({ myLikes: favorites })
+        await profileAPI.saveData({ myFavorites: favorites })
       } catch (err) {
         console.error('保存点赞失败:', err)
       }
