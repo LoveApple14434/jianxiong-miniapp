@@ -20,7 +20,7 @@ const getNickName = () => {
     return source.nickname.trim()
   }
 
-  return '健雄学子'
+  return '匿名'
 }
 
 const getAvatarText = name => {

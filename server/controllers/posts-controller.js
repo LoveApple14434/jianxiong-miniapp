@@ -90,8 +90,8 @@ const createComment = async (req, res) => {
             const user = await findByOpenid(decoded.openid)
             if (user) {
               const publicUser = toPublicUser(user)
-              authorName = publicUser.nickName || publicUser.nickname || '我'
-              authorAvatar = publicUser.avatarText || (authorName ? String(authorName).charAt(0) : '我')
+              authorName = publicUser.nickName || publicUser.nickname || '匿名'
+              authorAvatar = publicUser.avatarText || (authorName ? String(authorName).charAt(0) : '匿')
             }
           }
         }
@@ -106,8 +106,8 @@ const createComment = async (req, res) => {
 
     const comment = {
       id: Date.now(),
-      avatar: authorAvatar || (authorName ? String(authorName).charAt(0) : '我'),
-      name: authorName || '我',
+      avatar: authorAvatar || (authorName ? String(authorName).charAt(0) : '匿'),
+      name: authorName || '匿名',
       time: '刚刚',
       content: content.trim(),
       isSelf: Boolean(req.headers.authorization || req.body.token || req.query.token)
