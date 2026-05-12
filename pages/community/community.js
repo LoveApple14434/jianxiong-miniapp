@@ -131,13 +131,18 @@ Page({
     })
   },
 
+  normalizePostName(post) {
+    const name = post && (post.name || post.authorName || '匿名')
+    return typeof name === 'string' && name.trim() ? name.trim() : '匿名'
+  },
+
   loadPosts() {
     wx.showLoading({ title: '加载中', mask: true })
     postAPI.list()
       .then(posts => {
         const allPosts = (Array.isArray(posts) ? posts : []).map(post => ({
           ...post,
-          name: post.name || post.authorName || '匿名',
+          name: this.normalizePostName(post),
           avatar: normalizePostAvatar(post)
         }))
         this.setData({ allPosts })

@@ -145,11 +145,22 @@ const deleteComment = async (req, res) => {
 const deletePostController = async (req, res) => {
   try {
     const { id } = req.params
-    const post = await deletePost(id)
+    const post = await getPostById(id)
 
     if (!post) {
       return res.status(404).json({ code: 404, message: '帖子不存在' })
     }
+
+    const currentUserName = req.auth && req.auth.user
+      ? (req.auth.user.nickName || req.auth.user.nickname || '')
+      : ''
+    const postAuthorName = post.name || post.authorName || ''
+
+    if (!currentUserName || postAuthorName !== currentUserName) {
+      return res.status(403).json({ code: 403, message: '只能删除自己发布的帖子' })
+    }
+
+    await deletePost(id)
 
     return res.json({ code: 0, message: '删除成功', data: { success: true } })
   } catch (error) {

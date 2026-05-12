@@ -1,5 +1,19 @@
 const { profileAPI } = require('../../services/api.js')
-const { isUserLogin } = require('../../utils/util')
+const { isUserLogin, getLoginInfo } = require('../../utils/util')
+
+const getCurrentUserInfo = () => {
+  const app = getApp()
+
+  if (app && typeof app.getUserInfo === 'function') {
+    const userInfo = app.getUserInfo()
+    if (userInfo && (userInfo.nickName || userInfo.nickname)) {
+      return userInfo
+    }
+  }
+
+  const loginInfo = getLoginInfo()
+  return loginInfo && loginInfo.userInfo ? loginInfo.userInfo : null
+}
 
 Page({
   data: {
@@ -70,21 +84,25 @@ Page({
   },
 
   getUserAvatar() {
-    const app = getApp()
-    const userInfo = app.getAuthState ? app.getAuthState().userInfo : null
+    const userInfo = getCurrentUserInfo()
     if (userInfo && userInfo.nickName) {
       return userInfo.nickName.charAt(0)
     }
-    return '我'
+    if (userInfo && userInfo.nickname) {
+      return userInfo.nickname.charAt(0)
+    }
+    return '匿'
   },
 
   getUserName() {
-    const app = getApp()
-    const userInfo = app.getAuthState ? app.getAuthState().userInfo : null
+    const userInfo = getCurrentUserInfo()
     if (userInfo && userInfo.nickName) {
       return userInfo.nickName
     }
-    return '我'
+    if (userInfo && userInfo.nickname) {
+      return userInfo.nickname
+    }
+    return '匿名'
   },
 
   getChapterId() {
