@@ -10,7 +10,7 @@ Page({
       { id: 'notes', icon: '📖', title: '我的书摘笔记' },
       { id: 'favorites', icon: '👍', title: '我的点赞' },
       { id: 'badges', icon: '🏆', title: '成就徽章' },
-      { id: 'settings', icon: '⚙️', title: '设置' }
+      { id: 'settings', icon: '⚙️', title: '切换账号' }
     ]
   },
 
@@ -140,7 +140,7 @@ Page({
       favorites: '/pages/profile/favorites/favorites',
       progress: '/pages/profile/progress/progress',
       badges: '/pages/profile/badges/badges',
-      settings: '/pages/login/login' // 暂时用登录页面作为设置
+      settings: '/pages/login/login'
     }
 
     const url = pageMap[id]
